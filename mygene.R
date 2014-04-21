@@ -227,3 +227,7 @@ MyGene<-setRefClass("MyGene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         ))
 
 
+mg.getgene<-function(geneid, fields = 'symbol,name,taxid,entrezgene', ...){
+    mg<-MyGene$new()
+    return(mg$getgene(geneid, fields=fields, ...)
+}

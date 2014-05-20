@@ -1,8 +1,3 @@
-%\VignetteIndexEntry{How to use MyGene.info R Client}
-%\VignetteKeywords{annotation, database}
-%\VignettePackage{mygene}
-%\VignetteEngine{util::Sweave}
-
 \documentclass[12pt]{article}
 %\\SweaveOpts{concordance=TRUE}
 <<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
@@ -35,18 +30,18 @@ MyGene.Info provides simple-to-use REST web services to query/retrieve gene anno
 
 
 <<>>=
-mg.getgene(1017, fields='name,symbol,taxid, entrezgene')
+mg.getgene("1017", fields=c("name","symbol","taxid","entrezgene"))
 @ 
 
 \subsection{\Rfunction{mg.getgenes}}
 
 \begin{itemize}
-\item Use \Rfunction{mg.getgenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given list of geneids.
+\item Use \Rfunction{mg.getgenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given character vector of geneids.
 \end{itemize} 
 
 
 <<>>=
-mg.getgenes(list(1017,1018,'ENSG00000148795'), species='human')
+mg.getgenes(c("1017","1018","ENSG00000148795"), species="human")
 @
 
 
@@ -61,13 +56,13 @@ mg.getgenes(list(1017,1018,'ENSG00000148795'), species='human')
 
 
 <<>>=
-mg.query('cdk2', size=5)
+mg.query("cdk2", size=5)
 @
 
 
 
 <<>>=
-mg.query('symbol:cdk2', species='human')
+mg.query("symbol:cdk2", species="human")
 @
 
 \subsection{\Rfunction{mg.querymany}}
@@ -79,14 +74,14 @@ mg.query('symbol:cdk2', species='human')
 
 
 <<>>=
-mg.querymany(list(1017, '695'), scopes='entrezgene', species='human')
+mg.querymany(c("1017", "695"), scopes="entrezgene", species="human")
 @ 
 
 
 
 
 <<>>=
-mg.querymany('1017,695', scopes='entrezgene', species=9606, returnall=TRUE)
+mg.querymany(c("1017","695"), scopes="entrezgene", species="9606", returnall=TRUE)
 @
 
 
@@ -104,7 +99,7 @@ Here we want to show you how to do ID mapping quickly and easily.
 Suppose xli is a list of gene symbols you want to convert to entrez gene ids:
 
 <<>>=
-xli<-list('DDX26B',
+xli<-c('DDX26B',
  'CCDC83',
  'MAST3',
  'FLOT1',
@@ -119,7 +114,7 @@ xli<-list('DDX26B',
 you can then call \Rcode{mg.querymany} method, telling it your input is \Rcode{symbol}, and you want \Rcode{entrezgene} (Entrez gene ids) back.
 
 <<>>=
-mg.querymany(xli, scopes='symbol', fields='entrezgene', species='human')
+mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
 @
 
 \subsection{Mapping gene symbols to Ensembl gene ids}
@@ -127,7 +122,7 @@ mg.querymany(xli, scopes='symbol', fields='entrezgene', species='human')
 Now if you want Ensembl gene ids back:
 
 <<>>=
-mg.querymany(xli, scopes='symbol', fields='ensembl.gene', species='human')
+mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 @
 
 \subsection{When an input has no matching gene}
@@ -135,19 +130,19 @@ mg.querymany(xli, scopes='symbol', fields='ensembl.gene', species='human')
 In case that an input id has no matching gene, you will be notified from the output.The returned list for this query term contains \Rcode{notfound} value as True.
 
 <<>>=
-xli<-list('DDX26B',
+xli<-c('DDX26B',
  'CCDC83',
  'MAST3',
  'FLOT1',
  'RPL11',
  'Gm10494')
-mg.querymany(xli, scopes='symbol', fields='entrezgene', species='human')
+mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
 @
 
 \subsection{When input ids are not just symbols}
 
 <<>>=
-xli<-list('DDX26B',
+xli<-c('DDX26B',
  'CCDC83',
  'MAST3',
  'FLOT1',
@@ -161,8 +156,8 @@ xli<-list('DDX26B',
 Above id list contains symbols, reporters and accession numbers, and supposedly we want to get back both Entrez gene ids and uniprot ids. Parameters \Rcode{scopes}, \Rcode{fields}, \Rcode{species} are all flexible enough to support multiple values, either a list or a comma-separated string:
 
 <<>>=
-mg.querymany(xli, scopes='symbol,reporter,accession', 
-             fields='entrezgene,uniprot', species='human')
+mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
+             fields=c("entrezgene","uniprot"), species="human")
 @
 
 
@@ -173,8 +168,8 @@ From the previous result, you may have noticed that query term \Rcode{1007\_s\_a
 By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query terms, together with the mapping output, from the returned result:
 
 <<>>=
-mg.querymany(xli, scopes='symbol,reporter,accession', 
-             fields='entrezgene,uniprot', species='human', returnall=TRUE)
+mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
+             fields=c("entrezgene","uniprot"), species="human", returnall=TRUE)
 @
 
 The returned result above contains \Rcode{out} for mapping output, \Rcode{missing} for missing query terms (a list), and \Rcode{dup} for query terms with multiple matches (including the number of matches).

@@ -1,8 +1,3 @@
-%\VignetteIndexEntry{How to use MyGene.info R Client}
-%\VignetteKeywords{annotation, database}
-%\VignettePackage{mygene}
-%\VignetteEngine{util::Sweave}
-
 \documentclass[12pt]{article}
 %\\SweaveOpts{concordance=TRUE}
 \RequirePackage{C:/Users/Amark/Documents/R/win-library/3.1/BiocStyle/sty/Bioconductor}
@@ -36,10 +31,10 @@ MyGene.Info provides simple-to-use REST web services to query/retrieve gene anno
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.getgene(1017, fields='name,symbol,taxid, entrezgene')
+> mg.getgene("1017", fields=c("name","symbol","taxid","entrezgene"))
 \end{Sinput}
 \begin{Soutput}
- chr "name,symbol,taxid, entrezgene"
+ chr [1:4] "name" "symbol" "taxid" "entrezgene"
 $`_id`
 [1] "1017"
 
@@ -60,13 +55,13 @@ $taxid
 \subsection{\Rfunction{mg.getgenes}}
 
 \begin{itemize}
-\item Use \Rfunction{mg.getgenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given list of geneids.
+\item Use \Rfunction{mg.getgenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given character vector of geneids.
 \end{itemize} 
 
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.getgenes(list(1017,1018,'ENSG00000148795'), species='human')
+> mg.getgenes(c("1017","1018","ENSG00000148795"), species="human")
 \end{Sinput}
 \begin{Soutput}
  chr "human"
@@ -145,25 +140,25 @@ $taxid
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.query('cdk2', size=5)
+> mg.query("cdk2", size=5)
 \end{Sinput}
 \begin{Soutput}
 $hits
   entrezgene                             name    _score  symbol    _id taxid
-1       1017        cyclin-dependent kinase 2 379.36148    CDK2   1017  9606
-2      12566        cyclin-dependent kinase 2 355.49432    Cdk2  12566 10090
-3     362817        cyclin dependent kinase 2 269.22430    Cdk2 362817 10116
-4      52004        CDK2-associated protein 2  20.37188 Cdk2ap2  52004 10090
-5     143384 CDK2-associated, cullin domain 1  19.41898  CACUL1 143384  9606
+1       1017        cyclin-dependent kinase 2 379.75990    CDK2   1017  9606
+2      12566        cyclin-dependent kinase 2 356.01750    Cdk2  12566 10090
+3     362817        cyclin dependent kinase 2 269.50705    Cdk2 362817 10116
+4      52004        CDK2-associated protein 2  20.39899 Cdk2ap2  52004 10090
+5     143384 CDK2-associated, cullin domain 1  19.44991  CACUL1 143384  9606
 
 $total
 [1] 26
 
 $max_score
-[1] 379.3615
+[1] 379.7599
 
 $took
-[1] 7
+[1] 6
 \end{Soutput}
 \end{Schunk}
 
@@ -171,18 +166,18 @@ $took
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.query('symbol:cdk2', species='human')
+> mg.query("symbol:cdk2", species="human")
 \end{Sinput}
 \begin{Soutput}
 $hits
   entrezgene                      name   _score symbol  _id taxid
-1       1017 cyclin-dependent kinase 2 87.86334   CDK2 1017  9606
+1       1017 cyclin-dependent kinase 2 87.94453   CDK2 1017  9606
 
 $total
 [1] 1
 
 $max_score
-[1] 87.86334
+[1] 87.94453
 
 $took
 [1] 3
@@ -199,7 +194,7 @@ $took
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(list(1017, '695'), scopes='entrezgene', species='human')
+> mg.querymany(c("1017", "695"), scopes="entrezgene", species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
@@ -250,7 +245,7 @@ Pass returnall=TRUE to return lists of duplicate or missing query terms.
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany('1017,695', scopes='entrezgene', species=9606, returnall=TRUE)
+> mg.querymany(c("1017","695"), scopes="entrezgene", species="9606", returnall=TRUE)
 \end{Sinput}
 \begin{Soutput}
 Finished
@@ -320,7 +315,7 @@ Suppose xli is a list of gene symbols you want to convert to entrez gene ids:
 
 \begin{Schunk}
 \begin{Sinput}
-> xli<-list('DDX26B',
+> xli<-c('DDX26B',
 +  'CCDC83',
 +  'MAST3',
 +  'FLOT1',
@@ -337,7 +332,7 @@ you can then call \Rcode{mg.querymany} method, telling it your input is \Rcode{s
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(xli, scopes='symbol', fields='entrezgene', species='human')
+> mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
@@ -459,7 +454,7 @@ Now if you want Ensembl gene ids back:
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(xli, scopes='symbol', fields='ensembl.gene', species='human')
+> mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
@@ -582,13 +577,13 @@ In case that an input id has no matching gene, you will be notified from the out
 
 \begin{Schunk}
 \begin{Sinput}
-> xli<-list('DDX26B',
+> xli<-c('DDX26B',
 +  'CCDC83',
 +  'MAST3',
 +  'FLOT1',
 +  'RPL11',
 +  'Gm10494')
-> mg.querymany(xli, scopes='symbol', fields='entrezgene', species='human')
+> mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
@@ -661,7 +656,7 @@ Pass returnall=TRUE to return lists of duplicate or missing query terms.
 
 \begin{Schunk}
 \begin{Sinput}
-> xli<-list('DDX26B',
+> xli<-c('DDX26B',
 +  'CCDC83',
 +  'MAST3',
 +  'FLOT1',
@@ -677,8 +672,8 @@ Above id list contains symbols, reporters and accession numbers, and supposedly 
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(xli, scopes='symbol,reporter,accession', 
-+              fields='entrezgene,uniprot', species='human')
+> mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
++              fields=c("entrezgene","uniprot"), species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
@@ -839,8 +834,8 @@ By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query 
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(xli, scopes='symbol,reporter,accession', 
-+              fields='entrezgene,uniprot', species='human', returnall=TRUE)
+> mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
++              fields=c("entrezgene","uniprot"), species="human", returnall=TRUE)
 \end{Sinput}
 \begin{Soutput}
 Finished

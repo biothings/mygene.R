@@ -1,7 +1,7 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.5.9)  27 MAY 2014 14:47
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (MiKTeX 2.9) (preloaded format=pdflatex 2014.5.9)  20 MAY 2014 10:20
 entering extended mode
 **mygene.tex
-("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene.tex"
+("C:\Users\Amark\Desktop\Su Lab-clone-clone\mygene\vignettes\mygene.tex"
 LaTeX2e <2011/06/27>
 Babel <v3.8m> and hyphenation patterns for english, afrikaans, ancientgreek, ar
 abic, armenian, assamese, basque, bengali, bokmal, bulgarian, catalan, coptic, 
@@ -376,6 +376,7 @@ LaTeX Font Info:    Try loading font information for T1+aer on input line 100.
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\ae\t1aer.fd"
 File: t1aer.fd 1997/11/16 Font definitions for T1/aer.
 ))))
+("C:\Users\Amark\Desktop\Su Lab-clone-clone\mygene\vignettes\mygene.aux")
 ("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene.aux")
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 13.
 LaTeX Font Info:    ... okay on input line 13.
@@ -431,8 +432,8 @@ LaTeX Info: Redefining \ref on input line 13.
 LaTeX Info: Redefining \pageref on input line 13.
 LaTeX Info: Redefining \nameref on input line 13.
 
-("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene.out")
-("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene.out")
+("C:\Users\Amark\Desktop\Su Lab-clone-clone\mygene\vignettes\mygene.out")
+("C:\Users\Amark\Desktop\Su Lab-clone-clone\mygene\vignettes\mygene.out")
 \@outlinefile=\write4
 
 *geometry* driver: auto-detecting
@@ -469,14 +470,15 @@ LaTeX Info: Redefining \nameref on input line 13.
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene-concordance.tex")
+
+("C:\Users\Amark\Desktop\Su Lab-clone-clone\mygene\vignettes\mygene-concordance
+.tex")
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <14.4> on input line 17.
 LaTeX Font Info:    External font `cmex10' loaded for size
 (Font)              <7> on input line 17.
-("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene.toc"
+ ("C:\Users\Amark\Desktop\Su Lab-clone-clone\mygene\vignettes\mygene.toc"
 LaTeX Font Info:    Try loading font information for T1+aett on input line 3.
-
 ("C:\Program Files (x86)\MiKTeX 2.9\tex\latex\ae\t1aett.fd"
 File: t1aett.fd 1997/11/16 Font definitions for T1/aett.
 )
@@ -528,7 +530,6 @@ Package atveryend Info: Empty hook `BeforeClearDocument' on input line 495.
  [10]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 495.
 
-("C:\Users\Amark\Desktop\Su Lab-clone\mygene\vignettes\mygene.aux")
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 495.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 495.
 Package rerunfilecheck Info: File `mygene.out' has not changed.
@@ -538,15 +539,18 @@ Package rerunfilecheck Info: File `mygene.out' has not changed.
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 495.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1026.
  ) 
 Here is how much of TeX's memory you used:
  7467 strings out of 493921
- 111802 string characters out of 3144877
+ 7479 strings out of 493921
+ 111886 string characters out of 3144877
  196340 words of memory out of 3000000
  10607 multiletter control sequences out of 15000+200000
  30696 words of font info for 69 fonts, out of 3000000 for 9000
  841 hyphenation exceptions out of 8191
  36i,11n,45p,365b,461s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 36i,12n,45p,365b,461s stack positions out of 5000i,500n,10000p,200000b,50000s
  <C:\Users\Amark\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\ec\dpi600\
 tcst1200.pk> <C:\Users\Amark\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour\jknappen\
 ec\dpi600\tctt1200.pk> <C:\Users\Amark\AppData\Local\MiKTeX\2.9\fonts\pk\ljfour

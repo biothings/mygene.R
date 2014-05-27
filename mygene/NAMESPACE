@@ -1,5 +1,6 @@
 importFrom("httr", "GET", "POST", "content")
 importFrom("jsonlite", "fromJSON")
+importFrom("IRanges", "List", "DataFrame")
 exportClasses("mygene")
 export("mg.getgene")
 export("mg.getgenes")

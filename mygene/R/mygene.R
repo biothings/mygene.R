@@ -1,11 +1,11 @@
-
+library(IRanges)
 library(httr)
 library(jsonlite)
 
 
 version <- '0.3'
 
-mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list', 'value', 'geneid', 'geneids', 'fields',
+mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list','li', 'value', 'geneid', 'geneids', 'fields',
         'query_fn', 'query_li', 'qr', 'q', 'qterms') , methods =list(
 
     initialize=function(Url='http://mygene.info/v2'){
@@ -109,6 +109,11 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         .url<-paste(.self$Url, '/gene/', geneid, sep = "")
         return(.self$.get(.url, params))},
 
+    .transpose.nested.list=function(li) {
+      ## Assumes that inner names of each element are the same
+      inner.names <- names(li[[1]])
+      setNames(lapply(inner.names, function(i) List(lapply(li, `[[`, i))), inner.names)},
+      
     .getgenes_inner=function(geneids, params){
         params[['ids']]<<-.self$.format_list(geneids)
         .url<-paste(.self$Url, '/gene/', sep = "")
@@ -199,8 +204,8 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         params['returnall']<<-NULL
         verbose <- .pop(params,'verbose', TRUE)
         params['verbose']<<-NULL
-        returnAsDF <- .pop(params,'returnAsDF', FALSE)
-        params['returnAsDF']<<-NULL
+        return.as.list <- .pop(params,'return.as.list', FALSE)
+        params['return.as.list']<<-NULL
         
         li_missing <-list()
         li_query <-list()
@@ -208,7 +213,7 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         li_dup <-list()
         out<-.self$.repeated_query(.self$.querymany_inner, qterms, params, verbose=verbose)
         
-        #df<-data.frame(t(sapply(out,c)))
+        df <- DataFrame(.self$.transpose.nested.list(out))
       
         for (hits in out){
           if (is.null(hits$notfound)){
@@ -229,11 +234,14 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
           if (exists('li_missing')){
             sprintf('%f input query terms found dup hits:   %s', length(li_missing), li_missing)}}
         if (returnall){
-          return(list('out'= out, 'dup'=li_dup, 'missing'=li_missing))}
+          return(list('out'= df, 'dup'=li_dup, 'missing'=li_missing))}
+        if (return.as.list){
+          return(out)
+        }
         else {
           if (verbose & (exists('li_dup') | exists('li_missing'))){
             cat('Pass returnall=TRUE to return lists of duplicate or missing query terms.\n')
-            return(out)}}}}
+            return(df)}}}}
         ))
 
 

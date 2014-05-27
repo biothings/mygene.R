@@ -1,2 +1,0 @@
-import("httr")import("Rcurl")import("rjson")import("jsonlite")
-exportClasses("MyGene")export("getgene")export("getgenes")export("query")export("querymany")export("metadata")

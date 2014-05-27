@@ -122,8 +122,11 @@ mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
 Now if you want Ensembl gene ids back:
 
 <<>>=
-mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+out<-mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+out
+out$ensembl.gene[[4]]
 @
+
 
 \subsection{When an input has no matching gene}
 
@@ -156,9 +159,12 @@ xli<-c('DDX26B',
 Above id list contains symbols, reporters and accession numbers, and supposedly we want to get back both Entrez gene ids and uniprot ids. Parameters \Rcode{scopes}, \Rcode{fields}, \Rcode{species} are all flexible enough to support multiple values, either a list or a comma-separated string:
 
 <<>>=
-mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
+out<-mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
+out
+out$uniprot[[5]]
 @
+
 
 
 \subsection{When an input id has multiple matching genes}

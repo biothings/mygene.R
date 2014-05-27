@@ -35,17 +35,20 @@ MyGene.Info provides simple-to-use REST web services to query/retrieve gene anno
 \end{Sinput}
 \begin{Soutput}
  chr [1:4] "name" "symbol" "taxid" "entrezgene"
+$`__need_your_help`
+[1] "We are working on a grant based on MyGene.info, please send us an email at cwu@scripps.edu to show your support. Read more at http://bit.ly/mygene-info , thanks!"
+
 $`_id`
 [1] "1017"
-
-$symbol
-[1] "CDK2"
 
 $entrezgene
 [1] 1017
 
 $name
 [1] "cyclin-dependent kinase 2"
+
+$symbol
+[1] "CDK2"
 
 $taxid
 [1] 9606
@@ -143,22 +146,25 @@ $taxid
 > mg.query("cdk2", size=5)
 \end{Sinput}
 \begin{Soutput}
+$`__need_your_help`
+[1] "We are working on a grant based on MyGene.info, please send us an email at cwu@scripps.edu to show your support. Read more at http://bit.ly/mygene-info , thanks!"
+
 $hits
   entrezgene                             name    _score  symbol    _id taxid
-1       1017        cyclin-dependent kinase 2 379.75990    CDK2   1017  9606
-2      12566        cyclin-dependent kinase 2 356.01750    Cdk2  12566 10090
-3     362817        cyclin dependent kinase 2 269.50705    Cdk2 362817 10116
-4      52004        CDK2-associated protein 2  20.39899 Cdk2ap2  52004 10090
-5     143384 CDK2-associated, cullin domain 1  19.44991  CACUL1 143384  9606
-
-$total
-[1] 26
+1       1017        cyclin-dependent kinase 2 380.14430    CDK2   1017  9606
+2      12566        cyclin-dependent kinase 2 339.55472    Cdk2  12566 10090
+3     362817        cyclin dependent kinase 2 269.77985    Cdk2 362817 10116
+4      52004        CDK2-associated protein 2  20.42308 Cdk2ap2  52004 10090
+5     143384 CDK2-associated, cullin domain 1  19.47708  CACUL1 143384  9606
 
 $max_score
-[1] 379.7599
+[1] 380.1443
 
 $took
 [1] 6
+
+$total
+[1] 26
 \end{Soutput}
 \end{Schunk}
 
@@ -169,18 +175,21 @@ $took
 > mg.query("symbol:cdk2", species="human")
 \end{Sinput}
 \begin{Soutput}
+$`__need_your_help`
+[1] "We are working on a grant based on MyGene.info, please send us an email at cwu@scripps.edu to show your support. Read more at http://bit.ly/mygene-info , thanks!"
+
 $hits
   entrezgene                      name   _score symbol  _id taxid
-1       1017 cyclin-dependent kinase 2 87.94453   CDK2 1017  9606
+1       1017 cyclin-dependent kinase 2 88.02286   CDK2 1017  9606
+
+$max_score
+[1] 88.02286
+
+$took
+[1] 5
 
 $total
 [1] 1
-
-$max_score
-[1] 87.94453
-
-$took
-[1] 3
 \end{Soutput}
 \end{Schunk}
 
@@ -199,44 +208,15 @@ $took
 \begin{Soutput}
 Finished
 Pass returnall=TRUE to return lists of duplicate or missing query terms.
-[[1]]
-[[1]]$name
-[1] "cyclin-dependent kinase 2"
-
-[[1]]$symbol
-[1] "CDK2"
-
-[[1]]$taxid
-[1] 9606
-
-[[1]]$entrezgene
-[1] 1017
-
-[[1]]$query
-[1] "1017"
-
-[[1]]$`_id`
-[1] "1017"
-
-
-[[2]]
-[[2]]$name
-[1] "Bruton agammaglobulinemia tyrosine kinase"
-
-[[2]]$symbol
-[1] "BTK"
-
-[[2]]$taxid
-[1] 9606
-
-[[2]]$entrezgene
-[1] 695
-
-[[2]]$query
-[1] "695"
-
-[[2]]$`_id`
-[1] "695"
+DataFrame with 2 rows and 6 columns
+                                       name          symbol         taxid    entrezgene
+                            <CharacterList> <CharacterList> <NumericList> <NumericList>
+1                 cyclin-dependent kinase 2            CDK2          9606          1017
+2 Bruton agammaglobulinemia tyrosine kinase             BTK          9606           695
+            query            X_id
+  <CharacterList> <CharacterList>
+1            1017            1017
+2             695             695
 \end{Soutput}
 \end{Schunk}
 
@@ -250,46 +230,15 @@ Pass returnall=TRUE to return lists of duplicate or missing query terms.
 \begin{Soutput}
 Finished
 $out
-$out[[1]]
-$out[[1]]$name
-[1] "cyclin-dependent kinase 2"
-
-$out[[1]]$symbol
-[1] "CDK2"
-
-$out[[1]]$taxid
-[1] 9606
-
-$out[[1]]$entrezgene
-[1] 1017
-
-$out[[1]]$query
-[1] "1017"
-
-$out[[1]]$`_id`
-[1] "1017"
-
-
-$out[[2]]
-$out[[2]]$name
-[1] "Bruton agammaglobulinemia tyrosine kinase"
-
-$out[[2]]$symbol
-[1] "BTK"
-
-$out[[2]]$taxid
-[1] 9606
-
-$out[[2]]$entrezgene
-[1] 695
-
-$out[[2]]$query
-[1] "695"
-
-$out[[2]]$`_id`
-[1] "695"
-
-
+DataFrame with 2 rows and 6 columns
+                                       name          symbol         taxid    entrezgene
+                            <CharacterList> <CharacterList> <NumericList> <NumericList>
+1                 cyclin-dependent kinase 2            CDK2          9606          1017
+2 Bruton agammaglobulinemia tyrosine kinase             BTK          9606           695
+            query            X_id
+  <CharacterList> <CharacterList>
+1            1017            1017
+2             695             695
 
 $dup
 list()
@@ -337,114 +286,19 @@ you can then call \Rcode{mg.querymany} method, telling it your input is \Rcode{s
 \begin{Soutput}
 Finished
 Pass returnall=TRUE to return lists of duplicate or missing query terms.
-[[1]]
-[[1]]$query
-[1] "DDX26B"
-
-[[1]]$entrezgene
-[1] 203522
-
-[[1]]$`_id`
-[1] "203522"
-
-
-[[2]]
-[[2]]$query
-[1] "CCDC83"
-
-[[2]]$entrezgene
-[1] 220047
-
-[[2]]$`_id`
-[1] "220047"
-
-
-[[3]]
-[[3]]$query
-[1] "MAST3"
-
-[[3]]$entrezgene
-[1] 23031
-
-[[3]]$`_id`
-[1] "23031"
-
-
-[[4]]
-[[4]]$query
-[1] "FLOT1"
-
-[[4]]$entrezgene
-[1] 10211
-
-[[4]]$`_id`
-[1] "10211"
-
-
-[[5]]
-[[5]]$query
-[1] "RPL11"
-
-[[5]]$entrezgene
-[1] 6135
-
-[[5]]$`_id`
-[1] "6135"
-
-
-[[6]]
-[[6]]$query
-[1] "ZDHHC20"
-
-[[6]]$entrezgene
-[1] 253832
-
-[[6]]$`_id`
-[1] "253832"
-
-
-[[7]]
-[[7]]$query
-[1] "LUC7L3"
-
-[[7]]$entrezgene
-[1] 51747
-
-[[7]]$`_id`
-[1] "51747"
-
-
-[[8]]
-[[8]]$query
-[1] "SNORD49A"
-
-[[8]]$entrezgene
-[1] 26800
-
-[[8]]$`_id`
-[1] "26800"
-
-
-[[9]]
-[[9]]$query
-[1] "CTSH"
-
-[[9]]$entrezgene
-[1] 1512
-
-[[9]]$`_id`
-[1] "1512"
-
-
-[[10]]
-[[10]]$query
-[1] "ACOT8"
-
-[[10]]$entrezgene
-[1] 10005
-
-[[10]]$`_id`
-[1] "10005"
+DataFrame with 10 rows and 3 columns
+             query    entrezgene            X_id
+   <CharacterList> <NumericList> <CharacterList>
+1           DDX26B        203522          203522
+2           CCDC83        220047          220047
+3            MAST3         23031           23031
+4            FLOT1         10211           10211
+5            RPL11          6135            6135
+6          ZDHHC20        253832          253832
+7           LUC7L3         51747           51747
+8         SNORD49A         26800           26800
+9             CTSH          1512            1512
+10           ACOT8         10005           10005
 \end{Soutput}
 \end{Schunk}
 
@@ -454,122 +308,39 @@ Now if you want Ensembl gene ids back:
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+> out<-mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
 Pass returnall=TRUE to return lists of duplicate or missing query terms.
-[[1]]
-[[1]]$ensembl.gene
-[1] "ENSG00000165359" "ENSG00000268630"
-
-[[1]]$`_id`
-[1] "203522"
-
-[[1]]$query
-[1] "DDX26B"
-
-
-[[2]]
-[[2]]$ensembl.gene
-[1] "ENSG00000150676"
-
-[[2]]$`_id`
-[1] "220047"
-
-[[2]]$query
-[1] "CCDC83"
-
-
-[[3]]
-[[3]]$ensembl.gene
-[1] "ENSG00000099308"
-
-[[3]]$`_id`
-[1] "23031"
-
-[[3]]$query
-[1] "MAST3"
-
-
-[[4]]
-[[4]]$ensembl.gene
+\end{Soutput}
+\begin{Sinput}
+> out
+\end{Sinput}
+\begin{Soutput}
+DataFrame with 10 rows and 3 columns
+                                          ensembl.gene            X_id           query
+                                       <CharacterList> <CharacterList> <CharacterList>
+1                      ENSG00000165359,ENSG00000268630          203522          DDX26B
+2                                      ENSG00000150676          220047          CCDC83
+3                                      ENSG00000099308           23031           MAST3
+4  ENSG00000137312,ENSG00000206379,ENSG00000206480,...           10211           FLOT1
+5                                      ENSG00000142676            6135           RPL11
+6                                      ENSG00000180776          253832         ZDHHC20
+7                                      ENSG00000108848           51747          LUC7L3
+8                      ENSG00000206956,ENSG00000175061           26800        SNORD49A
+9                                      ENSG00000103811            1512            CTSH
+10                                     ENSG00000101473           10005           ACOT8
+\end{Soutput}
+\begin{Sinput}
+> out$ensembl.gene[[4]]
+\end{Sinput}
+\begin{Soutput}
 [1] "ENSG00000137312" "ENSG00000206379" "ENSG00000206480" "ENSG00000223654"
 [5] "ENSG00000224740" "ENSG00000230143" "ENSG00000232280" "ENSG00000236271"
-
-[[4]]$`_id`
-[1] "10211"
-
-[[4]]$query
-[1] "FLOT1"
-
-
-[[5]]
-[[5]]$ensembl.gene
-[1] "ENSG00000142676"
-
-[[5]]$`_id`
-[1] "6135"
-
-[[5]]$query
-[1] "RPL11"
-
-
-[[6]]
-[[6]]$ensembl.gene
-[1] "ENSG00000180776"
-
-[[6]]$`_id`
-[1] "253832"
-
-[[6]]$query
-[1] "ZDHHC20"
-
-
-[[7]]
-[[7]]$ensembl.gene
-[1] "ENSG00000108848"
-
-[[7]]$`_id`
-[1] "51747"
-
-[[7]]$query
-[1] "LUC7L3"
-
-
-[[8]]
-[[8]]$ensembl.gene
-[1] "ENSG00000206956" "ENSG00000175061"
-
-[[8]]$`_id`
-[1] "26800"
-
-[[8]]$query
-[1] "SNORD49A"
-
-
-[[9]]
-[[9]]$ensembl.gene
-[1] "ENSG00000103811"
-
-[[9]]$`_id`
-[1] "1512"
-
-[[9]]$query
-[1] "CTSH"
-
-
-[[10]]
-[[10]]$ensembl.gene
-[1] "ENSG00000101473"
-
-[[10]]$`_id`
-[1] "10005"
-
-[[10]]$query
-[1] "ACOT8"
 \end{Soutput}
 \end{Schunk}
+
 
 \subsection{When an input has no matching gene}
 
@@ -588,67 +359,15 @@ In case that an input id has no matching gene, you will be notified from the out
 \begin{Soutput}
 Finished
 Pass returnall=TRUE to return lists of duplicate or missing query terms.
-[[1]]
-[[1]]$query
-[1] "DDX26B"
-
-[[1]]$entrezgene
-[1] 203522
-
-[[1]]$`_id`
-[1] "203522"
-
-
-[[2]]
-[[2]]$query
-[1] "CCDC83"
-
-[[2]]$entrezgene
-[1] 220047
-
-[[2]]$`_id`
-[1] "220047"
-
-
-[[3]]
-[[3]]$query
-[1] "MAST3"
-
-[[3]]$entrezgene
-[1] 23031
-
-[[3]]$`_id`
-[1] "23031"
-
-
-[[4]]
-[[4]]$query
-[1] "FLOT1"
-
-[[4]]$entrezgene
-[1] 10211
-
-[[4]]$`_id`
-[1] "10211"
-
-
-[[5]]
-[[5]]$query
-[1] "RPL11"
-
-[[5]]$entrezgene
-[1] 6135
-
-[[5]]$`_id`
-[1] "6135"
-
-
-[[6]]
-[[6]]$query
-[1] "Gm10494"
-
-[[6]]$notfound
-[1] TRUE
+DataFrame with 6 rows and 3 columns
+            query    entrezgene            X_id
+  <CharacterList> <NumericList> <CharacterList>
+1          DDX26B        203522          203522
+2          CCDC83        220047          220047
+3           MAST3         23031           23031
+4           FLOT1         10211           10211
+5           RPL11          6135            6135
+6         Gm10494                              
 \end{Soutput}
 \end{Schunk}
 
@@ -672,158 +391,42 @@ Above id list contains symbols, reporters and accession numbers, and supposedly 
 
 \begin{Schunk}
 \begin{Sinput}
-> mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
+> out<-mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
 +              fields=c("entrezgene","uniprot"), species="human")
 \end{Sinput}
 \begin{Soutput}
 Finished
 Pass returnall=TRUE to return lists of duplicate or missing query terms.
-[[1]]
-[[1]]$query
-[1] "DDX26B"
-
-[[1]]$entrezgene
-[1] 203522
-
-[[1]]$uniprot
-[[1]]$uniprot$`Swiss-Prot`
-[1] "Q5JSJ4"
-
-
-[[1]]$`_id`
-[1] "203522"
-
-
-[[2]]
-[[2]]$query
-[1] "CCDC83"
-
-[[2]]$entrezgene
-[1] 220047
-
-[[2]]$uniprot
-[[2]]$uniprot$`Swiss-Prot`
-[1] "Q8IWF9"
-
-
-[[2]]$`_id`
-[1] "220047"
-
-
-[[3]]
-[[3]]$query
-[1] "MAST3"
-
-[[3]]$entrezgene
-[1] 23031
-
-[[3]]$uniprot
-[[3]]$uniprot$`Swiss-Prot`
-[1] "O60307"
-
-[[3]]$uniprot$TrEMBL
-[1] "V9GYV0"
-
-
-[[3]]$`_id`
-[1] "23031"
-
-
-[[4]]
-[[4]]$query
-[1] "FLOT1"
-
-[[4]]$entrezgene
-[1] 10211
-
-[[4]]$uniprot
-[[4]]$uniprot$`Swiss-Prot`
-[1] "O75955"
-
-[[4]]$uniprot$TrEMBL
-[1] "A2AB09" "A2AB10" "A2AB11" "A2AB12" "A2AB13" "A2ABJ5" "B4DVY7" "Q5ST80"
-
-
-[[4]]$`_id`
-[1] "10211"
-
-
-[[5]]
-[[5]]$query
-[1] "RPL11"
-
-[[5]]$entrezgene
-[1] 6135
-
-[[5]]$uniprot
-[[5]]$uniprot$`Swiss-Prot`
+\end{Soutput}
+\begin{Sinput}
+> out
+\end{Sinput}
+\begin{Soutput}
+DataFrame with 9 rows and 4 columns
+            query    entrezgene  uniprot            X_id
+  <CharacterList> <NumericList>   <List> <CharacterList>
+1          DDX26B        203522 ########          203522
+2          CCDC83        220047 ########          220047
+3           MAST3         23031 ########           23031
+4           FLOT1         10211 ########           10211
+5           RPL11          6135 ########            6135
+6         Gm10494               ########                
+7       1007_s_at     100616237 ########       100616237
+8       1007_s_at           780 ########             780
+9        AK125780          2978 ########            2978
+\end{Soutput}
+\begin{Sinput}
+> out$uniprot[[5]]
+\end{Sinput}
+\begin{Soutput}
+$`Swiss-Prot`
 [1] "P62913"
 
-[[5]]$uniprot$TrEMBL
+$TrEMBL
 [1] "Q5VVD0"
-
-
-[[5]]$`_id`
-[1] "6135"
-
-
-[[6]]
-[[6]]$query
-[1] "Gm10494"
-
-[[6]]$notfound
-[1] TRUE
-
-
-[[7]]
-[[7]]$query
-[1] "1007_s_at"
-
-[[7]]$entrezgene
-[1] 100616237
-
-[[7]]$`_id`
-[1] "100616237"
-
-
-[[8]]
-[[8]]$query
-[1] "1007_s_at"
-
-[[8]]$entrezgene
-[1] 780
-
-[[8]]$uniprot
-[[8]]$uniprot$`Swiss-Prot`
-[1] "Q08345"
-
-[[8]]$uniprot$TrEMBL
-[1] "Q96T61" "Q96T62"
-
-
-[[8]]$`_id`
-[1] "780"
-
-
-[[9]]
-[[9]]$query
-[1] "AK125780"
-
-[[9]]$entrezgene
-[1] 2978
-
-[[9]]$uniprot
-[[9]]$uniprot$`Swiss-Prot`
-[1] "P43080"
-
-[[9]]$uniprot$TrEMBL
-[1] "A6PVH5"
-
-
-[[9]]$`_id`
-[1] "2978"
 \end{Soutput}
 \end{Schunk}
+
 
 
 \subsection{When an input id has multiple matching genes}
@@ -840,152 +443,18 @@ By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query 
 \begin{Soutput}
 Finished
 $out
-$out[[1]]
-$out[[1]]$query
-[1] "DDX26B"
-
-$out[[1]]$entrezgene
-[1] 203522
-
-$out[[1]]$uniprot
-$out[[1]]$uniprot$`Swiss-Prot`
-[1] "Q5JSJ4"
-
-
-$out[[1]]$`_id`
-[1] "203522"
-
-
-$out[[2]]
-$out[[2]]$query
-[1] "CCDC83"
-
-$out[[2]]$entrezgene
-[1] 220047
-
-$out[[2]]$uniprot
-$out[[2]]$uniprot$`Swiss-Prot`
-[1] "Q8IWF9"
-
-
-$out[[2]]$`_id`
-[1] "220047"
-
-
-$out[[3]]
-$out[[3]]$query
-[1] "MAST3"
-
-$out[[3]]$entrezgene
-[1] 23031
-
-$out[[3]]$uniprot
-$out[[3]]$uniprot$`Swiss-Prot`
-[1] "O60307"
-
-$out[[3]]$uniprot$TrEMBL
-[1] "V9GYV0"
-
-
-$out[[3]]$`_id`
-[1] "23031"
-
-
-$out[[4]]
-$out[[4]]$query
-[1] "FLOT1"
-
-$out[[4]]$entrezgene
-[1] 10211
-
-$out[[4]]$uniprot
-$out[[4]]$uniprot$`Swiss-Prot`
-[1] "O75955"
-
-$out[[4]]$uniprot$TrEMBL
-[1] "A2AB09" "A2AB10" "A2AB11" "A2AB12" "A2AB13" "A2ABJ5" "B4DVY7" "Q5ST80"
-
-
-$out[[4]]$`_id`
-[1] "10211"
-
-
-$out[[5]]
-$out[[5]]$query
-[1] "RPL11"
-
-$out[[5]]$entrezgene
-[1] 6135
-
-$out[[5]]$uniprot
-$out[[5]]$uniprot$`Swiss-Prot`
-[1] "P62913"
-
-$out[[5]]$uniprot$TrEMBL
-[1] "Q5VVD0"
-
-
-$out[[5]]$`_id`
-[1] "6135"
-
-
-$out[[6]]
-$out[[6]]$query
-[1] "Gm10494"
-
-$out[[6]]$notfound
-[1] TRUE
-
-
-$out[[7]]
-$out[[7]]$query
-[1] "1007_s_at"
-
-$out[[7]]$entrezgene
-[1] 100616237
-
-$out[[7]]$`_id`
-[1] "100616237"
-
-
-$out[[8]]
-$out[[8]]$query
-[1] "1007_s_at"
-
-$out[[8]]$entrezgene
-[1] 780
-
-$out[[8]]$uniprot
-$out[[8]]$uniprot$`Swiss-Prot`
-[1] "Q08345"
-
-$out[[8]]$uniprot$TrEMBL
-[1] "Q96T61" "Q96T62"
-
-
-$out[[8]]$`_id`
-[1] "780"
-
-
-$out[[9]]
-$out[[9]]$query
-[1] "AK125780"
-
-$out[[9]]$entrezgene
-[1] 2978
-
-$out[[9]]$uniprot
-$out[[9]]$uniprot$`Swiss-Prot`
-[1] "P43080"
-
-$out[[9]]$uniprot$TrEMBL
-[1] "A6PVH5"
-
-
-$out[[9]]$`_id`
-[1] "2978"
-
-
+DataFrame with 9 rows and 4 columns
+            query    entrezgene  uniprot            X_id
+  <CharacterList> <NumericList>   <List> <CharacterList>
+1          DDX26B        203522 ########          203522
+2          CCDC83        220047 ########          220047
+3           MAST3         23031 ########           23031
+4           FLOT1         10211 ########           10211
+5           RPL11          6135 ########            6135
+6         Gm10494               ########                
+7       1007_s_at     100616237 ########       100616237
+8       1007_s_at           780 ########             780
+9        AK125780          2978 ########            2978
 
 $dup
 $dup$`1007_s_at`

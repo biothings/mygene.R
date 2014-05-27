@@ -1,0 +1,8 @@
+importFrom("httr", "GET", "POST", "content")
+importFrom("jsonlite", "fromJSON")
+exportClasses("mygene")
+export("mg.getgene")
+export("mg.getgenes")
+export("mg.query")
+export("mg.querymany")
+export("mg.metadata")

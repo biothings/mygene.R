@@ -32,5 +32,3 @@ http://mygene.info/doc/query_service.html
 }
 
 \keyword{ package }
-
-}

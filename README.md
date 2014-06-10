@@ -3,7 +3,7 @@
 * R client for accessing MyGene.info annotation and query services
 * [Package vignette](https://bytebucket.org/sulab/mygene.r/raw/87f84c70a0c8e9af3bc8c7c5ded3f06460b7880e/mygene/inst/doc/mygene.pdf)
 
-### How do I get set up? ###
+### To install mygene ###
 
 * [Download](https://bitbucket.org/sulab/mygene.r/downloads)
 

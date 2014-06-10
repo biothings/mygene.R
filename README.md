@@ -6,7 +6,7 @@
 
 ### How do I get set up? ###
 
-* [Download file here] (https://bitbucket.org/sulab/mygene.r/downloads)
+* [Download](https://bitbucket.org/sulab/mygene.r/downloads)
 
 * Install dependencies IRanges, httr, jsonlite before mygene.
 

@@ -20,6 +20,9 @@ Fields to return, a list of a comma-sep string. If fields=="all", all available 
 }
   \item{species}{
 Optionally, you can pass comma-separated species names ortaxonomy ids
+}
+\item{return.as.list}{
+If True, return gene objects as a list, otherwise return as DataFrame.
 }}
 
 \references{

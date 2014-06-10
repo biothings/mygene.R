@@ -38,6 +38,9 @@ if True, return a list of all related data, including dup. and missing qterms.
 }
 \item{verbose}{
 If True (default), print out infomation about dup and missing qterms.
+}
+\item{return.as.list}{
+If True, return gene objects as a list, otherwise return as DataFrame.
 }}
 \references{
 http://mygene.info/doc/query_service.html

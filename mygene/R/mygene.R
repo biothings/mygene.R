@@ -139,8 +139,13 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         }
         verbose <- .pop(params,'verbose', TRUE)
         params['verbose']<<-NULL
+        return.as.list <- .pop(params,'return.as.list', FALSE)
+        params['return.as.list']<<-NULL
         out<-.self$.repeated_query(.self$.getgenes_inner, geneids, params)
-        return(out)},
+        df <- DataFrame(.self$.transpose.nested.list(out))
+        if (return.as.list){return(out)}
+        else{return(df)}
+        },
 
     query=function(q, ...){
         #         Return  the query result.

@@ -2,8 +2,143 @@ library(IRanges)
 library(httr)
 library(jsonlite)
 
-
 version <- '0.3'
+MyGene <- setClass("MyGene",
+    slots=list(base.url="character", delay="numeric", step="numeric", agent="character"),
+    prototype=list(base.url="http://mygene.info/v2", delay=1, step=1000, agent=sprintf('R-httr_mygene.R/httr.%s', version)))
+
+validMyGeneObject <- function(object) {
+    errors <- character(0)
+    for (sn in c("base.url", "delay", "step", "agent")) {
+        if (length(slot(object, sn)) != 1)
+            errors <- c(errors, sprintf("Slot %s must have length 1", sn))
+    }
+    if (length(errors) > 0)
+        errors
+    else
+        TRUE
+}
+
+setValidity("MyGene", validMyGeneObject)
+
+setGeneric(".request.path", signature=c("mygene"),
+           function(mygene, path, method=c("GET", "POST"), params=list()) standardGeneric(".request.path"))
+
+setMethod(".request.path", c(mygene="MyGene"), function(mygene, path, method=c("GET", "POST"), params=list()) {
+    url <- paste(mygene@base.url, path, sep="")
+    reqmethod <- switch(method, GET=GET, POST=POST, match.fun(method))
+    res <- reqmethod(url, query=params, config=add_headers(c(`User-Agent`=mygene@agent)))
+    if (res$status_code != 200)
+        stop("Request returned unexpected status code ", res$status_code)
+    content(res, "text")
+})
+
+.request.path.json <- function(..., fromJSON.args=list()) {
+    fromJSON.args <- as.list(fromJSON.args)
+    fromJSON.args$txt <- .request.path(...)
+    do.call(fromJSON, fromJSON.args)
+}
+
+.request.path.repeated <- function(mygene, path, vecparams, method="POST", ..., params=list(), fromJSON.args=list()) {
+    fromJSON.args$simplifyDataFrame <- FALSE
+    vecparams.split <- .transpose.nested.list(lapply(vecparams, .splitBySize, maxsize=mygene@step))
+    vecparams.splitcollapse <- lapply(vecparams.split, lapply, .collapse)
+    n <- length(vecparams.splitcollapse)
+    reslist <- vector("list", n)
+    i <- 1
+    fjargs <- list(simplifyDataFrame=FALSE)
+    repeat {
+        params.i <- c(params, vecparams.splitcollapse[[i]])
+        reslist[[i]] <- .request.path.json(mygene=mygene, path=path, method=method, ...,
+                                           params=params.i, fromJSON.args=fromJSON.args)
+        ## This avoids an extra sleep after the last fragment
+        if (i == n)
+            break()
+        Sys.sleep(mygene@delay)
+        i <- i+1
+    }
+    return(do.call(c, reslist))
+}
+
+setMethod("metadata", c(x="MyGene"), function(x, ...) {
+    .request.path.json(x, "/metadata", "GET")
+})
+
+available.fields <- function(mygene) {
+    metadata(mygene)$available_fields
+}
+
+setGeneric("getGene", signature=c("mygene"),
+           function(geneid, fields = c("symbol","name","taxid","entrezgene"), ..., return.as=c("JSON", "text"), mygene) standardGeneric("getGene"))
+
+setMethod("getGene", c(mygene="MyGene"), function(geneid, fields = c("symbol","name","taxid","entrezgene"), ..., return.as=c("JSON", "text"), mygene) {
+    return.as <- match.arg(return.as)
+    params <- list(...)
+    params$fields <- .collapse(fields)
+    res <- .request.path(mygene, paste("/gene/", geneid, sep=""), "GET", params)
+    switch(return.as,
+           JSON=fromJSON(res),
+           text=res)
+})
+
+## If nothing is passed for the mygene argument, just construct a
+## default MyGene object and use it.
+setMethod("getGene", c(mygene="missing"), function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+                       ..., return.as=c("JSON", "text"), mygene) {
+    mygene <- MyGene()
+    callGeneric(geneid, fields, ..., return.as=return.as, mygene=mygene)
+})
+
+setGeneric("getGenes", signature=c("mygene"),
+           function(geneids, fields = c("symbol","name","taxid","entrezgene"), ...,
+                    return.as = c("DataFrame", "data.frame", "records", "text"), mygene)
+           standardGeneric("getGenes"))
+
+setMethod("getGenes", c(mygene="MyGene"), function(geneids, fields = c("symbol","name","taxid","entrezgene"), ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+    return.as <- match.arg(return.as)
+
+    ## It's not good enihgh to do multiple requests and concatenate
+    ## their texts, since that will result in multiple lists. So we
+    ## get the list of records and reserialze it back to JSON text.
+    if (return.as == "text") {
+        res <- callGeneric(geneids, fields, ..., return.as="records", mygene=mygene)
+        return(toJSON(res, pretty=TRUE))
+    }
+    ## "DataFrame" is the same as "data.frame" only we convert to the
+    ## IRanges class DataFrame and we convert "list" columns to "List"
+    ## stances.
+    else if (return.as == "DataFrame") {
+        res <- callGeneric(geneids, fields, ..., return.as="data.frame", mygene=mygene)
+        return(.df2DF(res))
+    }
+    ## Get the records, then call jsonlite:::simplify to convert to a
+    ## data.frame
+    else if (return.as == "data.frame") {
+        res <- callGeneric(geneids, fields, ..., return.as="records", mygene=mygene)
+        return(jsonlite:::simplify(
+            res,
+            simplifyDataFrame=TRUE,
+            ## These other simplifications should already be done
+            simplifyVector=FALSE,
+            simplifyMatrix=FALSE,
+            simplifyDate=FALSE))
+    }
+    ## Base case: return.as == "records". Return the top level record list.
+    else {
+        params <- list(...)
+        params$fields <- .collapse(fields)
+        vecparams <- list(ids=geneids)
+        .request.path.repeated(mygene, "/gene/", vecparams=vecparams, params=params)
+    }
+})
+
+setMethod("getGenes", c(mygene="missing"), function(geneids, fields = c("symbol","name","taxid","entrezgene"),
+                        ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+    mygene <- MyGene()
+    callGeneric(geneids, fields, ..., return.as=return.as[1], mygene=mygene)
+})
+
+## TODO: Delete below here after migrating everything to S4
 
 mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list','li', 'value', 'geneid', 'geneids', 'fields',
         'query_fn', 'query_li', 'qr', 'q', 'qterms') , methods =list(
@@ -40,7 +175,7 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
                 else{print(res)}}}},
 
     .post=function(Url, params=list()){
-        
+
         debug <- .pop(params,'debug', FALSE)
         params['debug']<<-NULL
         return_raw <- .pop(params,'return_raw', FALSE)
@@ -113,7 +248,7 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
       ## Assumes that inner names of each element are the same
       inner.names <- names(li[[1]])
       setNames(lapply(inner.names, function(i) List(lapply(li, `[[`, i))), inner.names)},
-      
+
     .getgenes_inner=function(geneids, params){
         params[['ids']]<<-.self$.format_list(geneids)
         .url<-paste(.self$Url, '/gene/', sep = "")
@@ -139,13 +274,8 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         }
         verbose <- .pop(params,'verbose', TRUE)
         params['verbose']<<-NULL
-        return.as.list <- .pop(params,'return.as.list', FALSE)
-        params['return.as.list']<<-NULL
         out<-.self$.repeated_query(.self$.getgenes_inner, geneids, params)
-        df <- DataFrame(.self$.transpose.nested.list(out))
-        if (return.as.list){return(out)}
-        else{return(df)}
-        },
+        return(out)},
 
     query=function(q, ...){
         #         Return  the query result.
@@ -211,15 +341,15 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         params['verbose']<<-NULL
         return.as.list <- .pop(params,'return.as.list', FALSE)
         params['return.as.list']<<-NULL
-        
+
         li_missing <-list()
         li_query <-list()
         li_cnt <-list()
         li_dup <-list()
         out<-.self$.repeated_query(.self$.querymany_inner, qterms, params, verbose=verbose)
-        
+
         df <- DataFrame(.self$.transpose.nested.list(out))
-      
+
         for (hits in out){
           if (is.null(hits$notfound)){
             li_query<-append(li_query, hits[['query']])}
@@ -232,7 +362,7 @@ mygene<-setRefClass("mygene",  fields=c('Url', 'delay', 'step', 'params', 'list'
         for (hits in li_cnt){
           if (li_cnt[[hits]] > 1){
             li_dup<-append(li_dup, li_cnt[hits])}}
-        
+
         if (verbose){
           if (exists('li_dup')){
             sprintf('%f input query terms found dup hits:   %s', length(li_dup), li_dup)}

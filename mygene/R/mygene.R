@@ -42,7 +42,7 @@ setValidity("MyGene", validMyGeneObject)
         gene_obj <- .return.as(gene_obj, "records")
         outdf <-jsonlite:::simplify(gene_obj)
         # This expands out any inner columns that may themselves be data frames.
-        outdf <- data.frame(as.list(outdf), check.names=FALSE)
+        outdf <- .unnest.df(outdf)
         return(outdf)
     }
 
@@ -87,44 +87,44 @@ setMethod(".request.post", c(mygene="MyGene"), function(mygene, path, params=lis
 })
 
 
-.repeated.query<- function(mygene, path, vecparams, params=list(), return.as) {
-    ql <- length(vecparams)
+.repeated.query <- function(mygene, path, vecparams, params=list(), return.as) {
     verbose <- mygene@verbose
-    if (ql <= mygene@step){
-             #No need to do series of batch queries, turn off verbose output
-        verbose = FALSE}
     vecparams.split <- .transpose.nested.list(lapply(vecparams, .splitBySize, maxsize=mygene@step))
+    if (length(vecparams.split) <= 1)
+        verbose <- FALSE
     vecparams.splitcollapse <- lapply(vecparams.split, lapply, .collapse)
     n <- length(vecparams.splitcollapse)
-    reslist <- vector("list", n)
+    reslist <- character(n)
     i <- 1
     repeat {
-        # if (verbose){
-        #   sprintf('querying %f-%f...', (i+1), min((mygene@delay), ql))}
+        if (verbose) {
+          message("Processing chunk ", i)
+        }
         params.i <- c(params, vecparams.splitcollapse[[i]])
-        res <- .request.post(mygene=mygene, path, params=params.i)
-        reslist[[i]] <- fromJSON(res, simplifyVector=FALSE)
+        reslist[[i]] <- .request.post(mygene=mygene, path, params=params.i)
         ## This avoids an extra sleep after the last fragment
         if (i == n){
             break()
+        }
         Sys.sleep(mygene@delay)
         i <- i+1
-        }
     }
-    res <- do.call(c, reslist)
     # This gets the text that would have been returned if we could submit all genes in a single query.
-    restext <- as(toJSON(res), "character")
+    restext <- .json.batch.collapse(reslist)
     return(restext)
 }
 
+.json.batch.collapse <- function(x){
+    stopifnot(all(grepl("^\\s*\\[.*\\]\\s*$", x, perl=TRUE)))
+    x <- gsub(pattern="^\\s*\\[|\\]\\s*$", replacement="", x, perl=TRUE)
+    x <- paste(x, collapse=",")
+    paste("[", x, "]")
+
+}
 
 setMethod("metadata", c(x="MyGene"), function(x, ...) {
-    .request.post.json(x, "/metadata")
+    .return.as(.request.get(x, "/metadata"), "records")
 })
-
-available.fields <- function(mygene) {
-    metadata(mygene)$available_fields
-}
 
 setGeneric("getGene", signature=c("mygene"),
            function(geneid, fields = c("symbol","name","taxid","entrezgene"), ..., return.as=c("records", "text"), mygene) standardGeneric("getGene"))
@@ -158,7 +158,7 @@ setMethod("getGenes", c(mygene="MyGene"), function(geneids, fields = c("symbol",
         params[['fields']] <- .collapse(fields)
         params <- lapply(params, function(x) {str(x);.collapse(x)})
     }
-    vecparams <- list(ids=geneids)
+    vecparams <- list(ids=uncollapse(geneids))
     res <- .repeated.query(mygene, '/gene/', vecparams=vecparams, params=params)
     .return.as(res, return.as=return.as)
 
@@ -171,9 +171,9 @@ setMethod("getGenes", c(mygene="missing"), function(geneids, fields = c("symbol"
 })
 
 setGeneric("query", signature=c("mygene"),
-           function(q, ..., return.as=c("data.frame", "text"), mygene) standardGeneric("query"))
+           function(q, ..., return.as=c("data.frame", "records", "text"), mygene) standardGeneric("query"))
 
-setMethod("query", c(mygene="MyGene"), function(q, ..., return.as=c("data.frame", "text"), mygene) {
+setMethod("query", c(mygene="MyGene"), function(q, ..., return.as=c("data.frame", "records", "text"), mygene) {
     return.as <- match.arg(return.as)
     params <- list(...)
     params[['q']] <- q
@@ -182,10 +182,12 @@ setMethod("query", c(mygene="MyGene"), function(q, ..., return.as=c("data.frame"
         return(fromJSON(res))}
     else if (return.as == "text"){
         return(.return.as(res, "text"))}
+    else if (return.as == "records"){
+        return(.return.as(res, "records"))}
 
 })
 
-setMethod("query", c(mygene="missing"), function(q, ..., return.as=c("data.frame", "text"), mygene) {
+setMethod("query", c(mygene="missing"), function(q, ..., return.as=c("data.frame", "records", "text"), mygene) {
     mygene <- MyGene()
     callGeneric(q, ..., return.as=return.as, mygene=mygene)
 })
@@ -200,7 +202,7 @@ setMethod("queryMany", c(mygene="MyGene"),
 
     return.as <- match.arg(return.as)
     params <- list(...)
-    vecparams<-list(q=qterms)
+    vecparams<-list(q=uncollapse(qterms))
     if (exists('scopes')){
         params[['scopes']] <- .collapse(scopes)
         if ('scope' %in% params){

@@ -22,10 +22,10 @@ BiocStyle::latex()
 MyGene.Info provides simple-to-use REST web services to query/retrieve gene annotation data. It's designed with simplicity and performance emphasized. \Rpackage{mygene} is an easy-to-use R wrapper to access MyGene.Info services.
 \section{Gene Annotation Service}
 
-\subsection{\Rfunction{mg.getgene}}
+\subsection{\Rfunction{getGene}}
 
 \begin{itemize}
-\item Use \Rfunction{mg.getgene}, the wrapper for GET query of "/gene/<geneid>" service, to return the gene object for the given geneid.
+\item Use \Rfunction{getGene}, the wrapper for GET query of "/gene/<geneid>" service, to return the gene object for the given geneid.
 \end{itemize} 
 
 <<echo=FALSE>>=
@@ -33,61 +33,61 @@ library(mygene)
 @
 
 <<>>=
-mg.getgene("1017", fields=c("name","symbol","taxid","entrezgene"))
+getGene("1017", fields=c("name","symbol","taxid","entrezgene"))
 @ 
 
-\subsection{\Rfunction{mg.getgenes}}
+\subsection{\Rfunction{getGenes}}
 
 \begin{itemize}
-\item Use \Rfunction{mg.getgenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given character vector of geneids.
+\item Use \Rfunction{getGenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given character vector of geneids.
 \end{itemize} 
 
 
 <<>>=
-mg.getgenes(c("1017","1018","ENSG00000148795"), species="human")
+getGenes(c("1017","1018","ENSG00000148795"), species="human")
 @
 
 
 \section{Gene Query Service}
 
-\subsection{\Rfunction{mg.query}}
+\subsection{\Rfunction{query}}
 
 \begin{itemize}
-\item Use \Rfunction{mg.query}, a wrapper for GET query of "/query?q=<query>" service, to return  the query result.
+\item Use \Rfunction{query}, a wrapper for GET query of "/query?q=<query>" service, to return  the query result.
 \end{itemize}
 
 
 
 <<>>=
-mg.query("cdk2", size=5)
+query("cdk2", size=5)
 @
 
 
 
 <<>>=
-mg.query("symbol:cdk2", species="human")
+query("symbol:cdk2", species="human", return.as="records")
 @
 
-\subsection{\Rfunction{mg.querymany}}
+\subsection{\Rfunction{queryMany}}
 
 \begin{itemize}
-\item Use \Rfunction{mg.query}, a wrapper for POST query of "/query" service, to return  the batch query result.
+\item Use \Rfunction{queryMany}, a wrapper for POST query of "/query" service, to return  the batch query result.
 \end{itemize}
 
 
 
 <<>>=
-mg.querymany(c("1017", "695"), scopes="entrezgene", species="human")
+queryMany(c(1017, 695), scopes="entrezgene", species="human")
 @ 
 
 
-
+By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query terms
 
 <<>>=
-mg.querymany(c("1017","695"), scopes="entrezgene", species="9606", returnall=TRUE)
+queryMany(c(1017, 695, 1017, "NAT_TEST"), scopes="entrezgene", species="9606", returnall=TRUE)
 @
 
-
+The returned result above contains \Rcode{out} for mapping output, \Rcode{$missing} for missing query terms (a list), and \Rcode{$dup} for query terms with multiple matches (including the number of matches).
 
    
 \section{Tutorial, ID mapping}
@@ -114,10 +114,10 @@ xli<-c('DDX26B',
  'ACOT8')
 @
 
-you can then call \Rcode{mg.querymany} method, telling it your input is \Rcode{symbol}, and you want \Rcode{entrezgene} (Entrez gene ids) back.
+You can then call \Rcode{queryMany} method, telling it your input is \Rcode{symbol}, and you want \Rcode{entrezgene} (Entrez gene ids) back.
 
 <<>>=
-mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
+queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 @
 
 \subsection{Mapping gene symbols to Ensembl gene ids}
@@ -125,7 +125,7 @@ mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
 Now if you want Ensembl gene ids back:
 
 <<>>=
-out<-mg.querymany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+out<-queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 out
 out$ensembl.gene[[4]]
 @
@@ -142,7 +142,7 @@ xli<-c('DDX26B',
  'FLOT1',
  'RPL11',
  'Gm10494')
-mg.querymany(xli, scopes="symbol", fields="entrezgene", species="human")
+queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 @
 
 \subsection{When input ids are not just symbols}
@@ -162,7 +162,7 @@ xli<-c('DDX26B',
 Above id list contains symbols, reporters and accession numbers, and supposedly we want to get back both Entrez gene ids and uniprot ids. Parameters \Rcode{scopes}, \Rcode{fields}, \Rcode{species} are all flexible enough to support multiple values, either a list or a comma-separated string:
 
 <<>>=
-out<-mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
+out<-queryMany(xli, scopes=c("symbol","reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
 out
 out$uniprot[[5]]
@@ -174,14 +174,6 @@ out$uniprot[[5]]
 
 From the previous result, you may have noticed that query term \Rcode{1007\_s\_at} matches two genes. In that case, you will be notified from the output, and the returned result will include both matching genes.
 
-By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query terms, together with the mapping output, from the returned result:
-
-<<>>=
-mg.querymany(xli, scopes=c("symbol","reporter","accession"), 
-             fields=c("entrezgene","uniprot"), species="human", returnall=TRUE)
-@
-
-The returned result above contains \Rcode{out} for mapping output, \Rcode{missing} for missing query terms (a list), and \Rcode{dup} for query terms with multiple matches (including the number of matches).
 
 \subsection{Can I convert a very large list of ids?}
 

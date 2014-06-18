@@ -1,5 +1,5 @@
-\name{mg.getgene}
-\alias{mg.getgene}
+\name{getGene}
+\alias{getGene}
 
 \title{
 Return the gene object for the given geneid.
@@ -8,7 +8,7 @@ Return the gene object for the given geneid.
 This is a wrapper for GET query of "/gene/<geneid>" service.
 }
 \usage{
-mg.getgene(geneid, fields = 'symbol,name,taxid,entrezgene', ...)
+getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene", ...)
 }
 \arguments{
   \item{geneid}{
@@ -19,20 +19,23 @@ Fields to return, a list of a comma-sep string. If fields=="all", all available 
 }
   \item{species}{
 Optionally, you can pass comma-separated species names ortaxonomy ids
+}
+\item{return.as}{
+"records" (list), "text" (JSON).
 }}
 \references{
 http://mygene.info/doc/annotation_service.html
 }
 
 \seealso{
-\code{\link{mg.getgenes}} 
-\code{\link{mg.query}} 
-\code{\link{mg.querymany}}
+\code{\link{getGenes}} 
+\code{\link{query}} 
+\code{\link{queryMany}}
 }
 \examples{
 ## return the gene object for the given gene id
-mg.getgene(1017)
+getGene(1017)
 
 ## customize fields
-mg.getgene(1017, fields='name,symbol,refseq')
+getGene(1017, fields=c("name", "symbol", "refseq", return.as="text")
 }

@@ -1,6 +1,6 @@
-\name{mg.query}
-\alias{mg.query}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\name{query}
+\alias{query}
+
 \title{
 Return  the query result.
 }
@@ -8,7 +8,7 @@ Return  the query result.
 This is a wrapper for GET query of "/query?q=<query>" service.
 }
 \usage{
-mg.query(q, ...)
+query(q, ...)
 }
 \arguments{
   \item{q}{
@@ -35,21 +35,24 @@ Default: sort by matching scores in decending order.
   \item{entrezonly}{
 If True, return only matching entrez genes, otherwise, including matching 
 Ensemble-only genes (those have no matching entrez genes).
+}
+\item{return.as}{
+"data.frame", "records" (list), "text" (JSON).
 }}
 \references{
 Ref: http://mygene.info/doc/query_service.html
 }
 
 \seealso{
-\code{\link{mg.querymany}} 
-\code{\link{mg.getgene}} 
-\code{\link{mg.getgenes}}
+\code{\link{queryMany}} 
+\code{\link{getGene}} 
+\code{\link{getGenes}}
 }
 \examples{
 ## return the query result
-mg.query('cdk2', size=5)
+query('cdk2', size=5)
 
-mg.query('reporter:1000_at')
+query('reporter:1000_at')
 
-mg.query('symbol:cdk2', species='human')
+query('symbol:cdk2', species='human', return.as="text")
 }

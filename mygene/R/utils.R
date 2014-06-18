@@ -6,6 +6,7 @@ library(xlsx)
 }
 
 .transpose.nested.list <- function(li) {
+  
     ## Assumes that inner names of each element are the same
     inner.i <- seq_along(li[[1]])
     res <- lapply(inner.i, function(i) lapply(li, `[[`, i))
@@ -41,9 +42,19 @@ library(xlsx)
   return(list)}
 }
 
-.unnest.df<-function(df){
-    outdf <-jsonlite:::simplify(df)
-    .df2DF(data.frame(as.list(outdf), check.names=FALSE))}
+
+.unnest.df <- function(df) {
+  reslist <- lapply(colnames(df), function(i) {
+    if (is(df[[i]], "data.frame")) {
+      setNames(df[[i]], paste(i, colnames(df[[i]]), sep="."))
+    } else {
+      df[i]
+    }
+  })
+  res <- do.call(cbind, reslist)
+  row.names(res) <- row.names(df)
+  res
+}
 
 #before writing to TSV/CSV/xlsx
 .convert2csv<-function(df){
@@ -53,10 +64,11 @@ library(xlsx)
 #suggested
 #write.xlsx(df, "out.xlsx", row.names=FALSE)
 
-# uncollapse <- function(x, sep=",") {
-#     unlist(strsplit(x, sep, fixed=TRUE))
+uncollapse <- function(x, sep=",") {
+    x <- as.character(unlist(x))
+    unlist(strsplit(x, sep, fixed=TRUE))
 
-# }
+}
 
 
 

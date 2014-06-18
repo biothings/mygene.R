@@ -1,4 +1,5 @@
 library(Hmisc)
+library(xlsx)
 
 .collapse <- function(...) {
     paste(unlist(list(...)), sep=",", collapse=",")
@@ -25,3 +26,41 @@ library(Hmisc)
     DF[isli] <- lapply(df[isli], as, "List")
     DF
 }
+
+.pop <- function(list, item, default_value=NULL){
+    if (is.null(list[[item]])){
+        return(default_value)}
+    else{
+        value <<- list[[item]]
+        return(value)}
+}
+
+.unnest <- function(list) {
+  while(any(vapply(list, is.list, T))){
+  list<-lapply(list, unlist, recursive=FALSE)
+  return(list)}
+}
+
+.unnest.df<-function(df){
+    outdf <-jsonlite:::simplify(df)
+    .df2DF(data.frame(as.list(outdf), check.names=FALSE))}
+
+#before writing to TSV/CSV/xlsx
+.convert2csv<-function(df){
+    needpc <-sapply(df, is, "CharacterList")
+    df[needpc]<-lapply(df[needpc],rtracklayer:::pasteCollapse)
+}
+#suggested
+#write.xlsx(df, "out.xlsx", row.names=FALSE)
+
+# uncollapse <- function(x, sep=",") {
+#     unlist(strsplit(x, sep, fixed=TRUE))
+
+# }
+
+
+
+
+
+
+

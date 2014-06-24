@@ -29,7 +29,8 @@ MyGene.Info provides simple-to-use REST web services to query/retrieve gene anno
 \end{itemize} 
 
 <<echo=FALSE>>=
-library(mygene)
+source('~/Documents/Su_Lab/Su_Lab-clone/mygene/R/mygene.R')
+source('~/Documents/Su_Lab/Su_Lab-clone/mygene/R/utils.R')
 @
 
 <<>>=
@@ -59,13 +60,7 @@ getGenes(c("1017","1018","ENSG00000148795"), species="human")
 
 
 <<>>=
-query("cdk2", size=5)
-@
-
-
-
-<<>>=
-query("symbol:cdk2", species="human", return.as="records")
+query(q="cdk2", size=5)
 @
 
 \subsection{\Rfunction{queryMany}}
@@ -75,19 +70,9 @@ query("symbol:cdk2", species="human", return.as="records")
 \end{itemize}
 
 
-
 <<>>=
 queryMany(c(1017, 695), scopes="entrezgene", species="human")
 @ 
-
-
-By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query terms
-
-<<>>=
-queryMany(c(1017, 695, 1017, "NAT_TEST"), scopes="entrezgene", species="9606", returnall=TRUE)
-@
-
-The returned result above contains \Rcode{out} for mapping output, \Rcode{$missing} for missing query terms (a list), and \Rcode{$dup} for query terms with multiple matches (including the number of matches).
 
    
 \section{Tutorial, ID mapping}
@@ -165,7 +150,7 @@ Above id list contains symbols, reporters and accession numbers, and supposedly 
 out<-queryMany(xli, scopes=c("symbol","reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
 out
-out$uniprot[[5]]
+out$`uniprot.Swiss-Prot`[[5]]
 @
 
 
@@ -174,6 +159,14 @@ out$uniprot[[5]]
 
 From the previous result, you may have noticed that query term \Rcode{1007\_s\_at} matches two genes. In that case, you will be notified from the output, and the returned result will include both matching genes.
 
+By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query terms
+
+<<>>=
+queryMany(xli, scopes=c("symbol", "reporter", "accession"), 
+          fields=c("entrezgene", "uniprot"), species='human', returnall=TRUE)
+@
+
+The returned result above contains \Rcode{out} for mapping output, \Rcode{missing} for missing query terms (a list), and \Rcode{dup} for query terms with multiple matches (including the number of matches).
 
 \subsection{Can I convert a very large list of ids?}
 

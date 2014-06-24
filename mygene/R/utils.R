@@ -1,4 +1,6 @@
+## mygene utility functions
 library(Hmisc)
+library(rtracklayer)
 library(xlsx)
 
 .collapse <- function(...) {
@@ -6,7 +8,6 @@ library(xlsx)
 }
 
 .transpose.nested.list <- function(li) {
-  
     ## Assumes that inner names of each element are the same
     inner.i <- seq_along(li[[1]])
     res <- lapply(inner.i, function(i) lapply(li, `[[`, i))
@@ -30,30 +31,33 @@ library(xlsx)
 
 .pop <- function(list, item, default_value=NULL){
     if (is.null(list[[item]])){
-        return(default_value)}
+        return(default_value)
+    }
     else{
-        value <<- list[[item]]
+        value <- list[[item]]
         return(value)}
 }
 
 .unnest <- function(list) {
-  while(any(vapply(list, is.list, T))){
-  list<-lapply(list, unlist, recursive=FALSE)
-  return(list)}
+    while(any(vapply(list, is.list, T))){
+    list<-lapply(list, unlist, recursive=FALSE)
+    return(list)
+    }
 }
 
 
 .unnest.df <- function(df) {
-  reslist <- lapply(colnames(df), function(i) {
-    if (is(df[[i]], "data.frame")) {
-      setNames(df[[i]], paste(i, colnames(df[[i]]), sep="."))
-    } else {
-      df[i]
-    }
-  })
-  res <- do.call(cbind, reslist)
-  row.names(res) <- row.names(df)
-  res
+    reslist <- lapply(colnames(df), function(i) {
+        if (is(df[[i]], "data.frame")) {
+            setNames(df[[i]], paste(i, colnames(df[[i]]), sep="."))
+        } 
+        else {
+            df[i]
+        }
+    })
+    res <- do.call(cbind, reslist)
+    row.names(res) <- row.names(df)
+    res
 }
 
 #before writing to TSV/CSV/xlsx
@@ -61,15 +65,21 @@ library(xlsx)
     needpc <-sapply(df, is, "CharacterList")
     df[needpc]<-lapply(df[needpc],rtracklayer:::pasteCollapse)
 }
-#suggested
-#write.xlsx(df, "out.xlsx", row.names=FALSE)
 
-uncollapse <- function(x, sep=",") {
-    x <- as.character(unlist(x))
-    unlist(strsplit(x, sep, fixed=TRUE))
-
+.json.batch.collapse <- function(x){
+    stopifnot(all(grepl("^\\s*\\[.*\\]\\s*$", x, perl=TRUE)))
+    x <- gsub(pattern="^\\s*\\[|\\]\\s*$", replacement="", x, perl=TRUE)
+    x <- paste(x, collapse=",")
+    paste("[", x, "]")
 }
 
+.uncollapse <- function(x, sep=",") {
+    x <- as.character(unlist(x))
+    unlist(strsplit(x, sep, fixed=TRUE))
+}
+
+#suggested
+#write.xlsx(out, "out1.xlsx", row.names=FALSE)
 
 
 

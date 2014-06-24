@@ -1,7 +1,6 @@
 library(IRanges)
 library(httr)
 library(jsonlite)
-library(rtracklayer)
 
 version <- '0.3'
 MyGene <- setClass("MyGene",
@@ -23,8 +22,8 @@ validMyGeneObject <- function(object) {
 setValidity("MyGene", validMyGeneObject)
 
 .return.as<-function(gene_obj, return.as = c("DataFrame", "data.frame", "records", "text")) {
-    return.as <- match.arg(return.as)
 
+    return.as <- match.arg(return.as)
     if (return.as == "text") {
         return(gene_obj)
     }
@@ -50,16 +49,21 @@ setValidity("MyGene", validMyGeneObject)
 }
 
 setGeneric(".request.get", signature=c("mygene"),
-           function(mygene, path, params=list()) standardGeneric(".request.get"))
+            function(mygene, path, params=list()) standardGeneric(".request.get"))
 
-setMethod(".request.get", c(mygene="MyGene"), function(mygene, path, params=list()){
+setMethod(".request.get", c(mygene="MyGene"),
+            function(mygene, path, params=list()){
+
     url <- paste(mygene@base.url, path, sep="")
     headers<-c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
-            res <- GET(url, query=params, verbose())}
+            res <- GET(url, query=params, verbose())
+        }
         else{
-            res <- GET(url, query=params, config=add_headers(headers))}}
+            res <- GET(url, query=params, config=add_headers(headers))
+            }
+        }
     if (res$status_code != 200)
         stop("Request returned unexpected status code:\n",
              paste(capture.output(print(res)), collapse="\n"))
@@ -68,37 +72,43 @@ setMethod(".request.get", c(mygene="MyGene"), function(mygene, path, params=list
 })
 
 setGeneric(".request.post", signature=c("mygene"),
-           function(mygene, path, params=list()) standardGeneric(".request.post"))
+            function(mygene, path, params=list()) standardGeneric(".request.post"))
 
-setMethod(".request.post", c(mygene="MyGene"), function(mygene, path, params=list()) {
+setMethod(".request.post", c(mygene="MyGene"),
+            function(mygene, path, params=list()) {
+
     url <- paste(mygene@base.url, path, sep="")
     headers<-c('Content-Type'= 'application/x-www-form-urlencoded',
             'User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
-            res <- POST(url, body=params, config=list(add_headers(headers)), verbose())}
+            res <- POST(url, body=params, config=list(add_headers(headers)), verbose())
+        }
         else{
-            res <- POST(url, body=params, config=list(add_headers(headers)))}}
+            res <- POST(url, body=params, config=list(add_headers(headers)))
+            }
+        }
     if (res$status_code != 200)
         stop("Request returned unexpected status code:\n",
              paste(capture.output(print(res)), collapse="\n"))
-    content(res, "text")
-
+    httr::content(res, "text")
 })
 
 
 .repeated.query <- function(mygene, path, vecparams, params=list(), return.as) {
+
     verbose <- mygene@verbose
     vecparams.split <- .transpose.nested.list(lapply(vecparams, .splitBySize, maxsize=mygene@step))
-    if (length(vecparams.split) <= 1)
+    if (length(vecparams.split) <= 1){
         verbose <- FALSE
+    }
     vecparams.splitcollapse <- lapply(vecparams.split, lapply, .collapse)
     n <- length(vecparams.splitcollapse)
     reslist <- character(n)
     i <- 1
     repeat {
         if (verbose) {
-          message("Processing chunk ", i)
+          message("Querying chunk ", i)
         }
         params.i <- c(params, vecparams.splitcollapse[[i]])
         reslist[[i]] <- .request.post(mygene=mygene, path, params=params.i)
@@ -114,22 +124,18 @@ setMethod(".request.post", c(mygene="MyGene"), function(mygene, path, params=lis
     return(restext)
 }
 
-.json.batch.collapse <- function(x){
-    stopifnot(all(grepl("^\\s*\\[.*\\]\\s*$", x, perl=TRUE)))
-    x <- gsub(pattern="^\\s*\\[|\\]\\s*$", replacement="", x, perl=TRUE)
-    x <- paste(x, collapse=",")
-    paste("[", x, "]")
-
-}
-
 setMethod("metadata", c(x="MyGene"), function(x, ...) {
     .return.as(.request.get(x, "/metadata"), "records")
 })
 
 setGeneric("getGene", signature=c("mygene"),
-           function(geneid, fields = c("symbol","name","taxid","entrezgene"), ..., return.as=c("records", "text"), mygene) standardGeneric("getGene"))
+            function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+            ..., return.as=c("records", "text"), mygene) standardGeneric("getGene"))
 
-setMethod("getGene", c(mygene="MyGene"), function(geneid, fields = c("symbol","name","taxid","entrezgene"), ..., return.as=c("records", "text"), mygene) {
+setMethod("getGene", c(mygene="MyGene"),
+            function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+            ..., return.as=c("records", "text"), mygene) {
+
     return.as <- match.arg(return.as)
     params <- list(...)
     params$fields <- .collapse(fields)
@@ -139,55 +145,67 @@ setMethod("getGene", c(mygene="MyGene"), function(geneid, fields = c("symbol","n
 
 ## If nothing is passed for the mygene argument, just construct a
 ## default MyGene object and use it.
-setMethod("getGene", c(mygene="missing"), function(geneid, fields = c("symbol","name","taxid","entrezgene"),
-                       ..., return.as=c("records", "text"), mygene) {
+setMethod("getGene", c(mygene="missing"),
+            function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+            ..., return.as=c("records", "text"), mygene) {
+
     mygene <- MyGene()
     callGeneric(geneid, fields, ..., return.as=return.as, mygene=mygene)
 })
 
 setGeneric("getGenes", signature=c("mygene"),
-           function(geneids, fields = c("symbol","name","taxid","entrezgene"), ...,
-                    return.as = c("DataFrame", "data.frame", "records", "text"), mygene)
-           standardGeneric("getGenes"))
+            function(geneids, fields = c("symbol","name","taxid","entrezgene"),
+            ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) standardGeneric("getGenes"))
 
-setMethod("getGenes", c(mygene="MyGene"), function(geneids, fields = c("symbol","name","taxid","entrezgene"),
+setMethod("getGenes", c(mygene="MyGene"),
+            function(geneids, fields = c("symbol","name","taxid","entrezgene"),
             ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+
     return.as <- match.arg(return.as)
     if (exists('fields')) {
         params <- list(...)
         params[['fields']] <- .collapse(fields)
         params <- lapply(params, function(x) {str(x);.collapse(x)})
     }
-    vecparams <- list(ids=uncollapse(geneids))
+    vecparams <- list(ids=.uncollapse(geneids))
     res <- .repeated.query(mygene, '/gene/', vecparams=vecparams, params=params)
     .return.as(res, return.as=return.as)
 
 })
 
-setMethod("getGenes", c(mygene="missing"), function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-                        ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+setMethod("getGenes", c(mygene="missing"),
+            function(geneids, fields = c("symbol","name","taxid","entrezgene"),
+            ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+
     mygene <- MyGene()
     callGeneric(geneids, fields, ..., return.as=return.as, mygene=mygene)
 })
 
 setGeneric("query", signature=c("mygene"),
-           function(q, ..., return.as=c("data.frame", "records", "text"), mygene) standardGeneric("query"))
+            function(q, ..., return.as=c("data.frame", "records", "text"), mygene) standardGeneric("query"))
 
-setMethod("query", c(mygene="MyGene"), function(q, ..., return.as=c("data.frame", "records", "text"), mygene) {
+setMethod("query", c(mygene="MyGene"),
+            function(q, ..., return.as=c("data.frame", "records", "text"), mygene) {
+
     return.as <- match.arg(return.as)
     params <- list(...)
     params[['q']] <- q
     res <- .request.get(mygene, paste("/query/", sep=""), params)
     if (return.as == "data.frame"){
-        return(fromJSON(res))}
+        return(fromJSON(res))
+    }
     else if (return.as == "text"){
-        return(.return.as(res, "text"))}
+        return(.return.as(res, "text"))
+    }
     else if (return.as == "records"){
-        return(.return.as(res, "records"))}
+        return(.return.as(res, "records"))
+    }
 
 })
 
-setMethod("query", c(mygene="missing"), function(q, ..., return.as=c("data.frame", "records", "text"), mygene) {
+setMethod("query", c(mygene="missing"),
+            function(q, ..., return.as=c("data.frame", "records", "text"), mygene) {
+
     mygene <- MyGene()
     callGeneric(q, ..., return.as=return.as, mygene=mygene)
 })
@@ -202,58 +220,66 @@ setMethod("queryMany", c(mygene="MyGene"),
 
     return.as <- match.arg(return.as)
     params <- list(...)
-    vecparams<-list(q=uncollapse(qterms))
+    vecparams<-list(q=.uncollapse(qterms))
     if (exists('scopes')){
         params[['scopes']] <- .collapse(scopes)
         if ('scope' %in% params){
         #allow scope for back-compatibility
-            params[['scopes']] <- .collapse(params[['scope']])}
+            params[['scopes']] <- .collapse(params[['scope']])
+        }
         if ('fields' %in% params){
-            params[['fields']] <- .collapse(params[['fields']])}
+            params[['fields']] <- .collapse(params[['fields']])
+        }
         if ('species' %in% params){
-            params[['species']] <- .collapse(params[['species']])}
+            params[['species']] <- .collapse(params[['species']])
+        }
         returnall <- .pop(params,'returnall', FALSE)
         params['returnall'] <-NULL
-        verbose <- .pop(params,'verbose', TRUE)
-        params['verbose'] <-NULL
+        verbose <- mygene@verbose
 
-        li_missing <-list()
-        li_query <-list()
-        li_cnt <-list()
-        li_dup <-list()
+        li_query <-c()
+        li_missing<-c()
         out <- .repeated.query(mygene, '/query/', vecparams=vecparams, params=params)
         out.li <- .return.as(out, "records")
+
         for (hits in out.li){
             if (is.null(hits$notfound)){
-                li_query<-append(li_query, hits[['query']])}
+                li_query<-c(li_query, hits[['query']])
+            }
             else if (hits$notfound) {
-                li_missing<-append(li_missing, hits[['query']])}
-            #check dup hits
-            li_cnt<-as.list(table(as.character(li_query)))
-            for (hits in li_cnt){
-                if (li_cnt[[hits]] > 1){
-                    li_dup<-append(li_dup, li_cnt[hits])}}}
+                li_missing<-c(li_missing, hits[['query']])
+            }
+        }
+        #check duplication hits
+        li_cnt<-as.list(table(li_query))
+        li_dup<-li_cnt[li_cnt > 1]
+        
         if (verbose){
-            cat("Finished\n")}
-
-        if (verbose){
-            if (exists('li_dup')){
-                sprintf('%f input query terms found dup hits:   %s', length(li_dup), li_dup)}
-            if (exists('li_missing')){
-                sprintf('%f input query terms found dup hits:   %s', length(li_missing), li_missing)}}
-
+            cat("Finished\n")
+            if (length('li_dup')>0){
+                sprintf('%f input query terms found dup hits:   %s', length(li_dup), li_dup)
+            }
+            if (length('li_missing')>0){
+                sprintf('%f input query terms found dup hits:   %s', length(li_missing), li_missing)
+                }
+            }
         out <- .return.as(out, return.as=return.as)
         if (returnall){
-            return(list('out'= out, 'dup'=li_dup, 'missing'=li_missing))}
+            return(list('out'= out, 'dup'=li_dup, 'missing'=li_missing))
+        }
         else {
-            if (verbose & (length('li_dup') > 0) | (length('li_missing') > 0)){
+            if (verbose & ((length(li_dup)>=1) | (length(li_missing)>=1))){
                 cat('Pass returnall=TRUE to return lists of duplicate or missing query terms.\n')
-                return(out)}}
+                }
+            return(out)    
+        }
     }
 })
 
-setMethod("queryMany", c(mygene="missing"), function(qterms, scopes=NULL, ...,
-                    return.as=c("DataFrame", "data.frame", "records", "text"), mygene){
+setMethod("queryMany", c(mygene="missing"),
+            function(qterms, scopes=NULL, ...,
+            return.as=c("DataFrame", "data.frame", "records", "text"), mygene){
+
     mygene<-MyGene()
     callGeneric(qterms, scopes, ..., return.as=return.as, mygene=mygene)
 })

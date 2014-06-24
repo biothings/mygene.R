@@ -1,5 +1,8 @@
 \name{getGene}
-\alias{getGene}
+\docType{methods}
+\alias{getGene-method}
+\alias{getGene,missing-method}
+\alias{getGene,MyGene-method}
 
 \title{
 Return the gene object for the given geneid.
@@ -8,7 +11,7 @@ Return the gene object for the given geneid.
 This is a wrapper for GET query of "/gene/<geneid>" service.
 }
 \usage{
-getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene", ...)
+getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene", ..., return.as)
 }
 \arguments{
   \item{geneid}{
@@ -37,5 +40,5 @@ http://mygene.info/doc/annotation_service.html
 getGene(1017)
 
 ## customize fields
-getGene(1017, fields=c("name", "symbol", "refseq", return.as="text")
+getGene(1017, fields=c("name", "symbol", "refseq"), return.as="text")
 }

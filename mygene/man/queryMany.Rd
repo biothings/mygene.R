@@ -1,5 +1,8 @@
-\name{queryMany}
-\alias{queryMany}
+\name{queryMany-methods}
+\docType{methods}
+\alias{queryMany-method}
+\alias{queryMany,missing-method}
+\alias{queryMany,MyGene-method}
 
 \title{
 Return the batch query result.
@@ -8,7 +11,7 @@ Return the batch query result.
 This is a wrapper for POST query of "/query" service.
 }
 \usage{
-querymMany(qterms, scopes=NULL, ...)
+queryMany(qterms, scopes=NULL, ..., return.as)
 }
 
 \arguments{

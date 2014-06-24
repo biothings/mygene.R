@@ -1,5 +1,8 @@
 \name{getGenes}
-\alias{getGenes}
+\docType{methods}
+\alias{getGenes-methods}
+\alias{getGenes,missing-method}
+\alias{getGenes,MyGene-method}
 
 \title{
 Return the list of gene objects for the given list of geneids.
@@ -8,7 +11,7 @@ Return the list of gene objects for the given list of geneids.
 This is a wrapper for POST query of "/gene" service.
 }
 \usage{
-getGenes(geneids, fields = c("symbol", "name", "taxid", "entrezgene", ...)
+getGenes(geneids, fields = c("symbol", "name", "taxid", "entrezgene", ..., return.as)
 }
 
 \arguments{
@@ -33,10 +36,10 @@ Ref: http://mygene.info/doc/annotation_service.html
 \code{\link{getGene}}  
 \code{\link{query}} 
 \code{\link{queryMany}}
-}G
+}
 \examples{
 ## Return the list of gene object for the given list of gene ids.
-getenes(c(1017,1018))
+getGenes(c(1017,1018))
 
 ## mix types of gene ids
 getGenes(c(1017,1018,'ENSG00000148795'), species='human')

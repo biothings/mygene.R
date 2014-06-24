@@ -1,5 +1,8 @@
-\name{query}
-\alias{query}
+\name{query-methods}
+\docType{methods}
+\alias{query-method}
+\alias{query,missing-method}
+\alias{query,MyGene-method}
 
 \title{
 Return  the query result.
@@ -8,7 +11,7 @@ Return  the query result.
 This is a wrapper for GET query of "/query?q=<query>" service.
 }
 \usage{
-query(q, ...)
+query(q, ..., return.as)
 }
 \arguments{
   \item{q}{

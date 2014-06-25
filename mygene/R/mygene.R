@@ -21,30 +21,29 @@ validMyGeneObject <- function(object) {
 
 setValidity("MyGene", validMyGeneObject)
 
-.return.as<-function(gene_obj, return.as = c("DataFrame", "data.frame", "records", "text")) {
+.return.as<-function(gene_obj, return.as = c("data.frame", "records", "text")) {
 
     return.as <- match.arg(return.as)
     if (return.as == "text") {
         return(gene_obj)
     }
+    ## Get the records, then call jsonlite:::simplify to convert to a
+    ## data.frame
+    
+    else if (return.as == "data.frame") {
+      gene_obj <- .return.as(gene_obj, "records")
+      outdf <-jsonlite:::simplify(gene_obj)
+      # This expands out any inner columns that may themselves be data frames.
+      outdf <- .unnest.df(outdf)
+      return(data.frame(DataFrame(outdf, check.names=FALSE), check.names=FALSE))
+    }
     ## "DataFrame" is the same as "data.frame" only we convert to the
     ## IRanges class DataFrame and we convert "list" columns to "List"
     ## stances.
-    else if (return.as == "DataFrame") {
-        outdf <- .return.as(gene_obj, "data.frame")
-        return(.df2DF(outdf))
-    }
-    ## Get the records, then call jsonlite:::simplify to convert to a
-    ## data.frame
-
-    else if (return.as == "data.frame") {
-        gene_obj <- .return.as(gene_obj, "records")
-        outdf <-jsonlite:::simplify(gene_obj)
-        # This expands out any inner columns that may themselves be data frames.
-        outdf <- .unnest.df(outdf)
-        return(outdf)
-    }
-
+#     else if (return.as == "DataFrame") {
+#         outdf <- .return.as(gene_obj, "data.frame")
+#         return(.df2DF(outdf))
+#     }
     else {return(fromJSON(gene_obj, simplifyDataFrame=FALSE))}
 }
 
@@ -67,7 +66,7 @@ setMethod(".request.get", c(mygene="MyGene"),
     if (res$status_code != 200)
         stop("Request returned unexpected status code:\n",
              paste(capture.output(print(res)), collapse="\n"))
-    content(res, "text")
+    httr::content(res, "text")
 
 })
 
@@ -155,11 +154,11 @@ setMethod("getGene", c(mygene="missing"),
 
 setGeneric("getGenes", signature=c("mygene"),
             function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-            ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) standardGeneric("getGenes"))
+            ..., return.as = c("data.frame", "records", "text"), mygene) standardGeneric("getGenes"))
 
 setMethod("getGenes", c(mygene="MyGene"),
             function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-            ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+            ..., return.as = c("data.frame", "records", "text"), mygene) {
 
     return.as <- match.arg(return.as)
     if (exists('fields')) {
@@ -175,7 +174,7 @@ setMethod("getGenes", c(mygene="MyGene"),
 
 setMethod("getGenes", c(mygene="missing"),
             function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-            ..., return.as = c("DataFrame", "data.frame", "records", "text"), mygene) {
+            ..., return.as = c("data.frame", "records", "text"), mygene) {
 
     mygene <- MyGene()
     callGeneric(geneids, fields, ..., return.as=return.as, mygene=mygene)
@@ -211,30 +210,21 @@ setMethod("query", c(mygene="missing"),
 })
 
 setGeneric("queryMany", signature=c("mygene"),
-            function(qterms, scopes=NULL, ..., return.as=c("DataFrame",
-            "data.frame", "records", "text"),mygene) standardGeneric("queryMany"))
+            function(qterms, scopes=NULL, ..., return.as=c("data.frame", 
+            "records", "text"), mygene) standardGeneric("queryMany"))
 
 setMethod("queryMany", c(mygene="MyGene"),
-            function(qterms, scopes=NULL, ..., return.as=c("DataFrame",
-            "data.frame", "records", "text"), mygene){
+            function(qterms, scopes=NULL, ..., return.as=c("data.frame", 
+            "records", "text"), mygene){
 
     return.as <- match.arg(return.as)
     params <- list(...)
     vecparams<-list(q=.uncollapse(qterms))
     if (exists('scopes')){
+        params<-lapply(params, .collapse)
         params[['scopes']] <- .collapse(scopes)
-        if ('scope' %in% params){
-        #allow scope for back-compatibility
-            params[['scopes']] <- .collapse(params[['scope']])
-        }
-        if ('fields' %in% params){
-            params[['fields']] <- .collapse(params[['fields']])
-        }
-        if ('species' %in% params){
-            params[['species']] <- .collapse(params[['species']])
-        }
-        returnall <- .pop(params,'returnall', FALSE)
-        params['returnall'] <-NULL
+         returnall <- .pop(params,'returnall', FALSE)
+         params['returnall'] <-NULL
         verbose <- mygene@verbose
 
         li_query <-c()
@@ -278,7 +268,7 @@ setMethod("queryMany", c(mygene="MyGene"),
 
 setMethod("queryMany", c(mygene="missing"),
             function(qterms, scopes=NULL, ...,
-            return.as=c("DataFrame", "data.frame", "records", "text"), mygene){
+            return.as=c("data.frame", "records", "text"), mygene){
 
     mygene<-MyGene()
     callGeneric(qterms, scopes, ..., return.as=return.as, mygene=mygene)

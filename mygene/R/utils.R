@@ -22,12 +22,12 @@ library(xlsx)
     unname(split(x, f))
 }
 
-.df2DF <- function(df) {
-    DF <- DataFrame(df, check.names=FALSE)
-    isli <- sapply(df, is.list)
-    DF[isli] <- lapply(df[isli], as, "List")
-    DF
-}
+# .df2DF <- function(df) {
+#     DF <- DataFrame(df, check.names=FALSE)
+#     isli <- sapply(df, is.list)
+#     DF[isli] <- lapply(df[isli], as, "List")
+#     DF
+# }
 
 .pop <- function(list, item, default_value=NULL){
     if (is.null(list[[item]])){
@@ -46,9 +46,12 @@ library(xlsx)
 }
 
 
-.unnest.df <- function(df) {
-    reslist <- lapply(colnames(df), function(i) {
+.unnest.df <- function(df, recursive=TRUE) {
+    reslist <-lapply(colnames(df), function(i) {
         if (is(df[[i]], "data.frame")) {
+          if (recursive){
+            df[[i]]<-.unnest.df(df[[i]], recursive=TRUE)
+          }
             setNames(df[[i]], paste(i, colnames(df[[i]]), sep="."))
         } 
         else {
@@ -59,6 +62,31 @@ library(xlsx)
     row.names(res) <- row.names(df)
     res
 }
+# .unnest.df <- function(df) {
+#   reslist <- lapply(colnames(df), function(i) {
+#     if (is(df[[i]], "data.frame")) {
+#       setNames(df[[i]], paste(i, colnames(df[[i]]), sep="."))
+#     } 
+#     else {
+#       df[i]
+#     }
+#   })
+#   res <- do.call(cbind, reslist)
+#   row.names(res) <- row.names(df)
+#   reslist <- lapply(colnames(res), function(i) {
+#     if (is(res[[i]], "data.frame")) {
+#       setNames(res[[i]], paste(i, colnames(res[[i]]), sep="."))
+#     } 
+#     else {
+#       res[i]
+#     }
+#   })
+#   res <- do.call(cbind, reslist)
+#   row.names(res) <- row.names(df)
+#   res
+# }
+
+
 
 #before writing to TSV/CSV/xlsx
 .convert2csv<-function(df){

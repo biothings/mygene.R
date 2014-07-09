@@ -1,8 +1,7 @@
 \name{queryMany-methods}
 \docType{methods}
 \alias{queryMany-method}
-\alias{queryMany,missing-method}
-\alias{queryMany,MyGene-method}
+
 
 \title{
 Return the batch query result.

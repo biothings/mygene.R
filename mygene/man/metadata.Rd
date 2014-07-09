@@ -1,7 +1,6 @@
 \name{metadata}
 \docType{methods}
 \alias{metadata-methods}
-\alias{metadata,MyGene-method}
 
 \title{
 metadata

@@ -1,6 +1,5 @@
 \name{mygene}
 \alias{mygene}
-\alias{MyGene.info}
 \docType{package}
 \title{
 Access MyGene.info services

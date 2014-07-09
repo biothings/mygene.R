@@ -22,12 +22,12 @@ library(xlsx)
     unname(split(x, f))
 }
 
-# .df2DF <- function(df) {
-#     DF <- DataFrame(df, check.names=FALSE)
-#     isli <- sapply(df, is.list)
-#     DF[isli] <- lapply(df[isli], as, "List")
-#     DF
-# }
+.df2DF <- function(df) {
+    DF <- DataFrame(df, check.names=FALSE)
+    isli <- sapply(df, is.list)
+    DF[isli] <- lapply(df[isli], as, "List")
+    DF
+}
 
 .pop <- function(list, item, default_value=NULL){
     if (is.null(list[[item]])){

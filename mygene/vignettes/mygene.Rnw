@@ -1,0 +1,168 @@
+\documentclass[12pt]{article}
+%\\SweaveOpts{concordance=TRUE}
+<<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
+BiocStyle::latex()
+@
+
+\newcommand{\exitem}[3]
+{\item \texttt{\textbackslash#1\{#2\}} #3 \csname#1\endcsname{#2}.}
+
+\title{MyGene.info R Client}
+\author{Adam Mark, Ryan Thompson, Chunlei Wu}
+
+\begin{document}
+\SweaveOpts{concordance=TRUE}
+
+\maketitle
+
+\tableofcontents
+
+\section{Overview}
+
+MyGene.Info provides simple-to-use REST web services to query/retrieve gene annotation data. It's designed with simplicity and performance emphasized. \Rpackage{mygene} is an easy-to-use R wrapper to access MyGene.Info services.
+\section{Gene Annotation Service}
+
+\subsection{\Rfunction{getGene}}
+
+\begin{itemize}
+\item Use \Rfunction{getGene}, the wrapper for GET query of "/gene/<geneid>" service, to return the gene object for the given geneid.
+\end{itemize} 
+
+<<echo=FALSE>>=
+source('~/Documents/Su_Lab/Su_Lab-clone/mygene/R/mygene.R')
+source('~/Documents/Su_Lab/Su_Lab-clone/mygene/R/utils.R')
+@
+
+<<>>=
+gene=getGene("1017", fields="all")
+length(gene)
+gene$name
+gene$taxid
+gene$uniprot
+gene$refseq
+@ 
+
+\subsection{\Rfunction{getGenes}}
+
+\begin{itemize}
+\item Use \Rfunction{getGenes}, the wrapper for POST query of "/gene" service, to return the list of gene objects for the given character vector of geneids.
+\end{itemize} 
+
+
+<<>>=
+getGenes(c("1017","1018","ENSG00000148795"))
+@
+
+
+\section{Gene Query Service}
+
+\subsection{\Rfunction{query}}
+
+\begin{itemize}
+\item Use \Rfunction{query}, a wrapper for GET query of "/query?q=<query>" service, to return  the query result.
+\end{itemize}
+
+
+
+<<>>=
+query(q="cdk2", size=5)
+@
+
+<<>>=
+query(q="NM_013993")
+@
+
+\subsection{\Rfunction{queryMany}}
+
+\begin{itemize}
+\item Use \Rfunction{queryMany}, a wrapper for POST query of "/query" service, to return  the batch query result.
+\end{itemize}
+
+
+<<>>=
+queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
+          scopes="reporter", species="human")
+@ 
+
+   
+\section{Tutorial, ID mapping}
+
+
+ID mapping is a very common, often not fun, task for every bioinformatician. Supposedly you have a list of gene symbols or reporter ids from an upstream analysis, and then your next analysis requires to use gene ids (e.g. Entrez gene ids or Ensembl gene ids). So you want to convert that list of gene symbols or reporter ids to corresponding gene ids.
+
+Here we want to show you how to do ID mapping quickly and easily. 
+
+\subsection{Mapping gene symbols to Entrez gene ids}
+
+Suppose xli is a list of gene symbols you want to convert to entrez gene ids:
+
+<<>>=
+xli<-c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1', 'RPL11', 'ZDHHC20', 'LUC7L3', 'SNORD49A', 'CTSH', 'ACOT8')
+@
+
+You can then call \Rcode{queryMany} method, telling it your input is \Rcode{symbol}, and you want \Rcode{entrezgene} (Entrez gene ids) back.
+
+<<>>=
+queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
+@
+
+\subsection{Mapping gene symbols to Ensembl gene ids}
+
+Now if you want Ensembl gene ids back:
+
+<<>>=
+out<-queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+out
+out$ensembl.gene[[4]]
+@
+
+
+\subsection{When an input has no matching gene}
+
+In case that an input id has no matching gene, you will be notified from the output.The returned list for this query term contains \Rcode{notfound} value as True.
+
+<<>>=
+xli<-c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1', 'RPL11', 'Gm10494')
+queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
+@
+
+\subsection{When input ids are not just symbols}
+
+<<>>=
+xli<-c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1', 'RPL11', 'Gm10494', '1007_s_at', 'AK125780')
+
+@
+
+Above id list contains symbols, reporters and accession numbers, and supposedly we want to get back both Entrez gene ids and uniprot ids. Parameters \Rcode{scopes}, \Rcode{fields}, \Rcode{species} are all flexible enough to support multiple values, either a list or a comma-separated string:
+
+<<>>=
+out<-queryMany(xli, scopes=c("symbol", "reporter","accession"), 
+             fields=c("entrezgene","uniprot"), species="human")
+out
+out$`uniprot.Swiss-Prot`[[5]]
+@
+
+
+
+\subsection{When an input id has multiple matching genes}
+
+From the previous result, you may have noticed that query term \Rcode{1007\_s\_at} matches two genes. In that case, you will be notified from the output, and the returned result will include both matching genes.
+
+By passing \Rcode{returnall=TRUE}, you will get both duplicate or missing query terms
+
+<<>>=
+queryMany(xli, scopes=c("symbol", "reporter", "accession"), 
+          fields=c("entrezgene", "uniprot"), species='human', returnall=TRUE)
+@
+
+The returned result above contains \Rcode{out} for mapping output, \Rcode{missing} for missing query terms (a list), and \Rcode{dup} for query terms with multiple matches (including the number of matches).
+
+\subsection{Can I convert a very large list of ids?}
+
+Yes, you can. If you pass an id list (i.e., \Rcode{xli} above) larger than 1000 ids, we will do the id mapping in-batch with 1000 ids at a time, and then concatenate the results all together for you. So, from the user-end, it's exactly the same as passing a shorter list. You don't need to worry about saturating our backend servers. Large lists, however, may take a while longer to query, so please wait patiently.
+
+\section{References}
+Wu C, MacLeod I, Su AI (2013) BioGPS and MyGene.info: organizing online, gene-centric information. Nucl. Acids Res. 41(D1): D561-D565.
+\email{help@mygene.info}
+
+\end{document}

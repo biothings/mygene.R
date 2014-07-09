@@ -1,6 +1,6 @@
 \name{metadata}
 \docType{methods}
-\alias{metadata-methods}
+\alias{metadata}
 
 \title{
 metadata
@@ -24,4 +24,3 @@ http://mygene.info/v2/metadata
 ## get available fields to return
 ## metadata(mygene)$available_fields
 }
-

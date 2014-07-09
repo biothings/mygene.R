@@ -2,7 +2,7 @@
 \alias{mygene}
 \docType{package}
 \title{
-Access MyGene.info services
+Access MyGene.info annotation services
 
 }
 \description{

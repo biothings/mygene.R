@@ -1,7 +1,5 @@
 ## mygene utility functions
 library(Hmisc)
-library(rtracklayer)
-library(xlsx)
 
 .collapse <- function(...) {
     paste(unlist(list(...)), sep=",", collapse=",")
@@ -62,37 +60,12 @@ library(xlsx)
     row.names(res) <- row.names(df)
     res
 }
-# .unnest.df <- function(df) {
-#   reslist <- lapply(colnames(df), function(i) {
-#     if (is(df[[i]], "data.frame")) {
-#       setNames(df[[i]], paste(i, colnames(df[[i]]), sep="."))
-#     } 
-#     else {
-#       df[i]
-#     }
-#   })
-#   res <- do.call(cbind, reslist)
-#   row.names(res) <- row.names(df)
-#   reslist <- lapply(colnames(res), function(i) {
-#     if (is(res[[i]], "data.frame")) {
-#       setNames(res[[i]], paste(i, colnames(res[[i]]), sep="."))
-#     } 
-#     else {
-#       res[i]
-#     }
-#   })
-#   res <- do.call(cbind, reslist)
-#   row.names(res) <- row.names(df)
-#   res
-# }
-
-
 
 #before writing to TSV/CSV/xlsx
-.convert2csv<-function(df){
-    needpc <-sapply(df, is, "CharacterList")
-    df[needpc]<-lapply(df[needpc],rtracklayer:::pasteCollapse)
-}
+# .convert2csv<-function(df){
+#     needpc <-sapply(df, is, "CharacterList")
+#     df[needpc]<-lapply(df[needpc],rtracklayer:::pasteCollapse)
+# }
 
 .json.batch.collapse <- function(x){
     stopifnot(all(grepl("^\\s*\\[.*\\]\\s*$", x, perl=TRUE)))
@@ -105,12 +78,3 @@ library(xlsx)
     x <- as.character(unlist(x))
     unlist(strsplit(x, sep, fixed=TRUE))
 }
-
-#suggested
-#write.xlsx(out, "out1.xlsx", row.names=FALSE)
-
-
-
-
-
-

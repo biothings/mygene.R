@@ -1,6 +1,6 @@
-\name{queryMany-methods}
+\name{queryMany}
 \docType{methods}
-\alias{queryMany-method}
+\alias{queryMany}
 
 
 \title{
@@ -42,7 +42,7 @@ if True, return a list of all related data, including dup. and missing qterms.
 If True (default), print out infomation about dup and missing qterms.
 }
 \item{return.as}{
-"data.frame", "records" (list), "text" (JSON), otherwise return as "DataFrame" (IRanges).
+"DataFrame" (IRanges, default), "records" (list), "text" (JSON).
 }}
 \references{
 http://mygene.info/doc/query_service.html
@@ -55,10 +55,11 @@ http://mygene.info/doc/query_service.html
 }
 \examples{
 ## return the batch query result
-queryMany(c(1018, 695), scopes="entrezgene", fields="ensembl.gene", species="human", return.as="records")
+queryMany(c('1053_at', '117_at', '121_at'), scopes="reporter", fields="ensembl.gene", 
+          species="human", return.as="records")
 
-queryMany(c(1017, '695'), scopes='entrezgene', species=9606)
+queryMany(c('1053_at', '117_at', '121_at'), scopes="reporter", species=9606)
 
-queryMany('1017,695', scopes='entrezgene', species='human')
+queryMany(c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1'), scopes="symbol", fields="entrezgene", species="human")
 }
 

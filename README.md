@@ -1,13 +1,24 @@
 ### What is this repository for? ###
 
 * R client for accessing MyGene.info annotation and query services
-* [Package vignette](https://bytebucket.org/sulab/mygene.r/raw/87f84c70a0c8e9af3bc8c7c5ded3f06460b7880e/mygene/inst/doc/mygene.pdf)
+* [Package vignette](https://bytebucket.org/sulab/mygene.r/raw/b5d3312762a3642129c2d01125f8c77b1e053cb2/mygene/inst/doc/mygene.pdf)
 
-### To install mygene: ###
+### To install ***mygene***: ###
 
-* [Download](https://bitbucket.org/sulab/mygene.r/downloads)
+* Download [***mygene***](https://bitbucket.org/sulab/mygene.r/downloads)
 
-* Install dependencies IRanges, httr, jsonlite before mygene.
+```
+#!r
+
+install.packages(c("IRanges", "httr", "jsonlite"))
+```
+
+```
+#!r
+
+install.packages("mygene_0.99.0.tar.gz", repos = NULL, type = "source")
+```
+
 
 ### Contact ###
 

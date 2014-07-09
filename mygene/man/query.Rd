@@ -1,8 +1,6 @@
 \name{query-methods}
 \docType{methods}
 \alias{query-method}
-\alias{query,missing-method}
-\alias{query,MyGene-method}
 
 \title{
 Return  the query result.

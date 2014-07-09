@@ -1,8 +1,7 @@
 \name{getGene}
 \docType{methods}
 \alias{getGene-method}
-\alias{getGene,missing-method}
-\alias{getGene,MyGene-method}
+
 
 \title{
 Return the gene object for the given geneid.

@@ -10,7 +10,7 @@
 ```
 #!r
 
-install.packages(c("IRanges", "httr", "jsonlite"))
+install.packages(c("IRanges", "httr", "jsonlite", "Hmisc"))
 ```
 
 ```

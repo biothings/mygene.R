@@ -40,4 +40,8 @@ getGene(1017)
 
 ## customize fields
 getGene(1017, fields=c("name", "symbol", "refseq"), return.as="text")
+
+## all fields
+getGene(1017, fields="all")
 }
+

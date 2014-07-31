@@ -97,7 +97,16 @@ Here we want to show you how to do ID mapping quickly and easily.
 Suppose xli is a list of gene symbols you want to convert to entrez gene ids:
 
 <<>>=
-xli<-c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1', 'RPL11', 'ZDHHC20', 'LUC7L3', 'SNORD49A', 'CTSH', 'ACOT8')
+xli<-c('DDX26B', 
+       'CCDC83', 
+       'MAST3', 
+       'FLOT1', 
+       'RPL11', 
+       'ZDHHC20', 
+       'LUC7L3', 
+       'SNORD49A', 
+       'CTSH', 
+       'ACOT8')
 @
 
 You can then call \Rcode{queryMany} method, telling it your input is \Rcode{symbol}, and you want \Rcode{entrezgene} (Entrez gene ids) back.
@@ -122,14 +131,26 @@ out$ensembl.gene[[4]]
 In case that an input id has no matching gene, you will be notified from the output.The returned list for this query term contains \Rcode{notfound} value as True.
 
 <<>>=
-xli<-c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1', 'RPL11', 'Gm10494')
+xli<-c('DDX26B', 
+       'CCDC83', 
+       'MAST3', 
+       'FLOT1', 
+       'RPL11', 
+       'Gm10494')
 queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 @
 
 \subsection{When input ids are not just symbols}
 
 <<>>=
-xli<-c('DDX26B', 'CCDC83', 'MAST3', 'FLOT1', 'RPL11', 'Gm10494', '1007_s_at', 'AK125780')
+xli<-c('DDX26B', 
+       'CCDC83', 
+       'MAST3', 
+       'FLOT1', 
+       'RPL11', 
+       'Gm10494', 
+       '1007_s_at', 
+       'AK125780')
 
 @
 

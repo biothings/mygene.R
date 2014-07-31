@@ -13,7 +13,7 @@ query(q, ..., return.as)
 }
 \arguments{
   \item{q}{
-Entrez/ensembl gene id
+query term(s), see query syntax at http://mygene.info/doc/query_service.html#query-syntax
 }
   \item{fields}{
 Fields to return, a list of a comma-sep string. If fields=="all", all
@@ -56,4 +56,6 @@ query("cdk2", size=5)
 query("reporter:1000_at")
 
 query("symbol:cdk2", return.as="text")
+
+query(q="cyclin-dependent kinase", fields="uniprot")
 }

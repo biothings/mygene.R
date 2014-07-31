@@ -40,6 +40,6 @@ Ref: http://mygene.info/doc/annotation_service.html
 getGenes(c(1017,1018))
 
 ## mix types of gene ids
-getGenes(c(1017,1018,"ENSG00000148795"), species="human")
+getGenes(c(1017,1018,"ENSG00000148795"))
 
 }

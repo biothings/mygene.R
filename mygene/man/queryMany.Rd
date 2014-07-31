@@ -20,6 +20,12 @@ A vector or list, or string of comma-separated query terms
   \item{fields}{
 a Vector of fields to return. If fields=="all", all available fields are returned.
 }
+  \item{scopes}{
+Type of types of identifiers, either a list or a comma-separated fields to specify type of
+input qterms, e.g. c("reporter", "ensemblgene", "symbol")
+refer to "http://mygene.info/doc/query_service.html#available_fields" for full list
+of fields.
+}
   \item{species}{
 Optionally, you can pass species names ortaxonomy ids
 }

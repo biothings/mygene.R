@@ -6,28 +6,24 @@
 ### To install ***mygene***: ###
 
 * Download [***mygene***](https://bitbucket.org/sulab/mygene.r/downloads)
-
-
+* Install dependencies
 ```
 #!r
-
 source("http://bioconductor.org/biocLite.R")
-biocLite("IRanges")
+biocLite(c("IRanges", "httr", "jsonlite", "Hmisc", "BiocStyle"))
 ```
-
-
-```
-#!r
-
-install.packages(c("httr", "jsonlite", "Hmisc"))
-```
-
+* Install from package archive file
 ```
 #!r
 
-install.packages("mygene_0.99.0.tar.gz", repos = NULL, type = "source")
+install.packages("mygene_0.99.0.tar.gz", repos = NULL, type = "source") 
 ```
+* or install using devtools
 
+#!r
+
+library(devtools) 
+install_bitbucket("mygene.R", "sulab", ref="default")
 
 ### Contact ###
 

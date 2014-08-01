@@ -7,10 +7,19 @@
 
 * Download [***mygene***](https://bitbucket.org/sulab/mygene.r/downloads)
 
+
 ```
 #!r
 
-install.packages(c("IRanges", "httr", "jsonlite", "Hmisc"))
+source("http://bioconductor.org/biocLite.R")
+biocLite("IRanges")
+```
+
+
+```
+#!r
+
+install.packages(c("httr", "jsonlite", "Hmisc"))
 ```
 
 ```

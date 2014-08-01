@@ -24,6 +24,7 @@ install.packages("mygene_0.99.0.tar.gz", repos = NULL, type = "source")
 
 library(devtools) 
 install_bitbucket("mygene.R", "sulab", ref="default")
+```
 
 ### Contact ###
 

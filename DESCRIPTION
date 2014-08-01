@@ -1,0 +1,16 @@
+Package: mygene
+Type: Package
+Title: Access MyGene.Info_ services
+Version: 0.99.0
+Date: 2014-04-18
+Author: Adam Mark, Chunlei Wu
+Maintainer: Adam Mark, Chunlei Wu <help@mygene.info>
+Description: MyGene.Info_ provides simple-to-use REST web services 
+             to query/retrieve gene annotation data. It's designed 
+             with simplicity and performance emphasized. *mygene*, 
+             is an easy-to-use R wrapper to access MyGene.Info_ services.
+License: BSD
+Depends: R (>= 3.0.0)
+Imports: httr (>= 0.3), jsonlite (>= 0.9.7), IRanges (>= 1.22.0), Hmisc
+Suggests: BiocStyle
+Packaged: 2014-07-30 14:31:37 UTC; Amark

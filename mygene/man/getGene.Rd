@@ -1,6 +1,6 @@
 \name{getGene}
 \docType{methods}
-\alias{getGene-method}
+\alias{getGene}
 
 
 \title{
@@ -23,7 +23,7 @@ Fields to return, a list of a comma-sep string. If fields=="all", all available 
 Optionally, you can pass comma-separated species names ortaxonomy ids
 }
 \item{return.as}{
-"records" (list), "text" (JSON).
+"records"" (list), "text" (JSON).
 }}
 \references{
 http://mygene.info/doc/annotation_service.html
@@ -40,4 +40,8 @@ getGene(1017)
 
 ## customize fields
 getGene(1017, fields=c("name", "symbol", "refseq"), return.as="text")
+
+## all fields
+getGene(1017, fields="all")
 }
+

@@ -2,7 +2,7 @@
 \alias{mygene}
 \docType{package}
 \title{
-Access MyGene.info services
+Access MyGene.info annotation services
 
 }
 \description{
@@ -15,7 +15,7 @@ Type: \tab Package\cr
 Version: \tab 0.99.0\cr
 Date: \tab 2014-04-18\cr
 License: \tab BSD\cr
-Depends: \tab httr jsonlite\cr
+Depends: \tab httr jsonlite Hmisc\cr
 }
 }
 \author{

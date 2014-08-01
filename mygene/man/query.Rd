@@ -1,6 +1,6 @@
-\name{query-methods}
+\name{query}
 \docType{methods}
-\alias{query-method}
+\alias{query}
 
 \title{
 Return  the query result.
@@ -13,7 +13,7 @@ query(q, ..., return.as)
 }
 \arguments{
   \item{q}{
-Entrez/ensembl gene id
+query term(s), see query syntax at http://mygene.info/doc/query_service.html#query-syntax
 }
   \item{fields}{
 Fields to return, a list of a comma-sep string. If fields=="all", all
@@ -38,7 +38,7 @@ If True, return only matching entrez genes, otherwise, including matching
 Ensemble-only genes (those have no matching entrez genes).
 }
 \item{return.as}{
-"data.frame", "records" (list), "text" (JSON).
+"DataFrame" (IRanges, default), "records" (list), or "text" (JSON).
 }}
 \references{
 Ref: http://mygene.info/doc/query_service.html
@@ -51,9 +51,11 @@ Ref: http://mygene.info/doc/query_service.html
 }
 \examples{
 ## return the query result
-query('cdk2', size=5)
+query("cdk2", size=5)
 
-query('reporter:1000_at')
+query("reporter:1000_at")
 
-query('symbol:cdk2', species='human', return.as="text")
+query("symbol:cdk2", return.as="text")
+
+query(q="cyclin-dependent kinase", fields="uniprot")
 }

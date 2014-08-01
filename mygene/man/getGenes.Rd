@@ -1,6 +1,6 @@
 \name{getGenes}
 \docType{methods}
-\alias{getGenes-methods}
+\alias{getGenes}
 
 \title{
 Return the list of gene objects for the given list of geneids.
@@ -23,7 +23,7 @@ A vector of fields to return. If fields=="all", all available fields are returne
 Optionally, you can pass species names ortaxonomy ids
 }
 \item{return.as}{
-"data.frame", "records" (list), "text" (JSON), otherwise return as "DataFrame" (IRanges).
+"DataFrame" (Iranges, default), "records" (list), "text" (JSON).
 }}
 
 \references{
@@ -40,6 +40,6 @@ Ref: http://mygene.info/doc/annotation_service.html
 getGenes(c(1017,1018))
 
 ## mix types of gene ids
-getGenes(c(1017,1018,'ENSG00000148795'), species='human')
+getGenes(c(1017,1018,"ENSG00000148795"))
 
 }

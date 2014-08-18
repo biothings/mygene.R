@@ -20,7 +20,7 @@ Fields to return, a list of a comma-sep string. If fields=="all", all
 available fields are returned.
 }
   \item{species}{
-Optionally, you can pass comma-separated species names ortaxonomy ids
+Optionally, you can pass comma-separated species names or taxonomy ids
 }
   \item{size}{
 The maximum number of results to return (with a cap of 1000 at the

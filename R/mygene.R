@@ -292,6 +292,7 @@ index.tx.id<-function(transcripts, splicings){#, genes){
   makeTranscriptDb(transcripts, new.splicings, genes) 
 }
 
+# merges like data.frames to single dataframe
 merge.df<-function(df.list){
   transcript.list<-lapply(df.list, `[[`, "transcripts")
   splicing.list<-lapply(df.list, `[[`, "splicings")
@@ -300,6 +301,7 @@ merge.df<-function(df.list){
   index.tx.id(transcripts, splicings)
 }
 
+#initiates data.frames from "records" query
 extract.tables.for.gene <- function(query) {
   query.exons <- query$exons
   txdf <- data.frame(tx_name=names(query.exons), 
@@ -327,6 +329,7 @@ extract.tables.for.gene <- function(query) {
   df.list
 }
 
+# passes gene list to query or queryMany, converts response to txdb
 makeTranscriptDbFromMyGene <- function(gene.list, scopes, species){
   if (length(gene.list) == 1) {
     res<-query(gene.list,

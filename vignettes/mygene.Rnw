@@ -99,8 +99,9 @@ xli<-c('DDX26B',
        'SNORD49A', 
        'CTSH', 
        'ACOT8')
-makeTranscriptDbFromMyGene(xli, 
+txdb<-makeTranscriptDbFromMyGene(xli, 
           scopes="symbol", species="human")
+transcripts(txdb)
 @ 
 
 makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \Rcode{TranscriptDb} object. See \Rcode{?TranscriptDb} for methods to utilize and access transcript annotations.

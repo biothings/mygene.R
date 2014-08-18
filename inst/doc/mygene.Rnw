@@ -29,8 +29,7 @@ MyGene.Info provides simple-to-use REST web services to query/retrieve gene anno
 \end{itemize} 
 
 <<echo=FALSE>>=
-source('~/Documents/Su_Lab/Su_Lab-clone/mygene/R/mygene.R')
-source('~/Documents/Su_Lab/Su_Lab-clone/mygene/R/utils.R')
+library(mygene)
 @
 
 <<>>=

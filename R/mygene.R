@@ -303,7 +303,11 @@ merge.df<-function(df.list){
 
 #initiates data.frames from "records" query
 extract.tables.for.gene <- function(query) {
+  #if () {
   query.exons <- query$exons
+#   } else if () {
+#     query.exons <-
+#   }
   txdf <- data.frame(tx_name=names(query.exons), 
                      num_exons=sapply(query.exons, function(x) nrow(x$exons)),
                      sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 

@@ -10,7 +10,8 @@ Description: MyGene.Info_ provides simple-to-use REST web services
              with simplicity and performance emphasized. *mygene*, 
              is an easy-to-use R wrapper to access MyGene.Info_ services.
 License: BSD
-Depends: R (>= 3.0.0)
-Imports: httr (>= 0.3), jsonlite (>= 0.9.7), IRanges (>= 1.22.0), Hmisc
+Depends: R (>= 3.0.0), GenomicFeatures
+Imports: httr (>= 0.3), jsonlite (>= 0.9.7), IRanges (>= 1.22.0),
+        Hmisc, sqldf
 Suggests: BiocStyle
-Packaged: 2014-08-18 20:42:55 UTC; Amark
+Packaged: 2014-08-18 21:21:57 UTC; Amark

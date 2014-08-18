@@ -84,10 +84,7 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
 @ 
 
 \section{makeTranscriptDbFromMyGene}
-
-\section{Tutorial, ID mapping}
 TranscriptDb is a container for storing transcript annotations. makeTranscriptDbFromMyGene allows the user to make a TranscriptDb object in the Genomic Features package from a mygene "exons" query. 
-
 
 <<>>=
 xli<-c('DDX26B', 

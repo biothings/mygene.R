@@ -49,7 +49,24 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
 
 
 ###################################################
-### code chunk number 8: mygene.Rnw:98-108
+### code chunk number 8: mygene.Rnw:89-101
+###################################################
+xli<-c('DDX26B', 
+       'CCDC83', 
+       'MAST3', 
+       'RPL11', 
+       'ZDHHC20', 
+       'LUC7L3', 
+       'SNORD49A', 
+       'CTSH', 
+       'ACOT8')
+txdb<-makeTranscriptDbFromMyGene(xli, 
+          scopes="symbol", species="human")
+transcripts(txdb)
+
+
+###################################################
+### code chunk number 9: mygene.Rnw:116-126
 ###################################################
 xli<-c('DDX26B', 
        'CCDC83', 
@@ -64,13 +81,13 @@ xli<-c('DDX26B',
 
 
 ###################################################
-### code chunk number 9: mygene.Rnw:113-114
+### code chunk number 10: mygene.Rnw:131-132
 ###################################################
 queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 
 
 ###################################################
-### code chunk number 10: mygene.Rnw:121-124
+### code chunk number 11: mygene.Rnw:139-142
 ###################################################
 out<-queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 out
@@ -78,7 +95,7 @@ out$ensembl.gene[[4]]
 
 
 ###################################################
-### code chunk number 11: mygene.Rnw:132-139
+### code chunk number 12: mygene.Rnw:150-157
 ###################################################
 xli<-c('DDX26B', 
        'CCDC83', 
@@ -90,7 +107,7 @@ queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 
 
 ###################################################
-### code chunk number 12: mygene.Rnw:144-153
+### code chunk number 13: mygene.Rnw:162-171
 ###################################################
 xli<-c('DDX26B', 
        'CCDC83', 
@@ -104,7 +121,7 @@ xli<-c('DDX26B',
 
 
 ###################################################
-### code chunk number 13: mygene.Rnw:158-162
+### code chunk number 14: mygene.Rnw:176-180
 ###################################################
 out<-queryMany(xli, scopes=c("symbol", "reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
@@ -113,7 +130,7 @@ out$`uniprot.Swiss-Prot`[[5]]
 
 
 ###################################################
-### code chunk number 14: mygene.Rnw:173-175
+### code chunk number 15: mygene.Rnw:191-193
 ###################################################
 queryMany(xli, scopes=c("symbol", "reporter", "accession"), 
           fields=c("entrezgene", "uniprot"), species='human', returnall=TRUE)

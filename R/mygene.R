@@ -1,6 +1,8 @@
+library(GenomicFeatures)
 library(IRanges)
 library(httr)
 library(jsonlite)
+library(sqldf)
 
 version <- '0.3'
 MyGene <- setClass("MyGene",
@@ -141,7 +143,7 @@ setMethod("getGene", c(mygene="missing"),
             ..., return.as=c("records", "text"), mygene) {
 
     mygene <- MyGene()
-    callGeneric(geneid, fields, ..., return.as=return.as, mygene=mygene)
+    getGene(geneid, fields, ..., return.as=return.as, mygene=mygene)
 })
 
 setGeneric("getGenes", signature=c("mygene"),
@@ -169,7 +171,7 @@ setMethod("getGenes", c(mygene="missing"),
             ..., return.as = c("DataFrame", "records", "text"), mygene) {
 
     mygene <- MyGene()
-    callGeneric(geneids, fields, ..., return.as=return.as, mygene=mygene)
+    getGenes(geneids, fields, ..., return.as=return.as, mygene=mygene)
 })
 
 setGeneric("query", signature=c("mygene"),
@@ -198,7 +200,7 @@ setMethod("query", c(mygene="missing"),
             function(q, ..., return.as=c("DataFrame", "records", "text"), mygene) {
 
     mygene <- MyGene()
-    callGeneric(q, ..., return.as=return.as, mygene=mygene)
+    query(q, ..., return.as=return.as, mygene=mygene)
 })
 
 setGeneric("queryMany", signature=c("mygene"),
@@ -207,10 +209,10 @@ setGeneric("queryMany", signature=c("mygene"),
 
 setMethod("queryMany", c(mygene="MyGene"),
             function(qterms, scopes=NULL, ..., return.as=c("DataFrame", 
-            "records", "text"), mygene){
-
+            "records", "text"), mygene){ 
+    
     return.as <- match.arg(return.as)
-    params <- list(...)
+    params <- list(...)        
     vecparams<-list(q=.uncollapse(qterms))
     if (exists('scopes')){
         params<-lapply(params, .collapse)
@@ -218,7 +220,11 @@ setMethod("queryMany", c(mygene="MyGene"),
          returnall <- .pop(params,'returnall', FALSE)
          params['returnall'] <-NULL
         verbose <- mygene@verbose
-
+        
+        if (length(qterms) == 0) {
+          return(query(qterms, ...))
+        } 
+        
         li_query <-c()
         li_missing<-c()
         out <- .repeated.query(mygene, '/query/', vecparams=vecparams, params=params)
@@ -263,5 +269,79 @@ setMethod("queryMany", c(mygene="missing"),
             return.as=c("DataFrame", "records", "text"), mygene){
 
     mygene<-MyGene()
-    callGeneric(qterms, scopes, ..., return.as=return.as, mygene=mygene)
+    # Should use callGeneric here except that callGeneric gets the variable scoping wrong for the "..." argument
+    queryMany(qterms, scopes, ..., return.as=return.as, mygene=mygene)
 })
+
+# tx.id is a foreign key. matches tx.id from transcripts.
+index.tx.id<-function(transcripts, splicings){#, genes){
+  transcripts$tx_id <- as.integer(seq_len(nrow(transcripts)))  
+  new.splicings<-sqldf("SELECT tx_id, 
+                       exon_rank, 
+                       exon_start, 
+                       exon_end  
+                       FROM transcripts 
+                       NATURAL JOIN splicings")
+  genes<-sqldf("SELECT tx_id, 
+               gene_id
+               FROM transcripts")
+  transcripts$num_exons<-NULL
+  transcripts$cdsstart<-NULL
+  transcripts$cdsend<-NULL
+  transcripts$gene_id<-NULL
+  makeTranscriptDb(transcripts, new.splicings, genes) 
+}
+
+merge.df<-function(df.list){
+  transcript.list<-lapply(df.list, `[[`, "transcripts")
+  splicing.list<-lapply(df.list, `[[`, "splicings")
+  transcripts <- do.call(rbind, transcript.list) 
+  splicings <- do.call(rbind, splicing.list)
+  index.tx.id(transcripts, splicings)
+}
+
+extract.tables.for.gene <- function(query) {
+  query.exons <- query$exons
+  txdf <- data.frame(tx_name=names(query.exons), 
+                     num_exons=sapply(query.exons, function(x) nrow(x$exons)),
+                     sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
+                            function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
+                     gene_id=query$`_id`)
+  txdf$strand <- factor(ifelse(txdf$strand == 1, "+", "-"), levels=c("+", "-", "*"))
+  txdf <- rename(txdf, c(txstart="tx_start", txend="tx_end",
+                         chr="tx_chrom", strand="tx_strand"))
+  splicings <- data.frame(
+    do.call(rbind,
+            lapply(row.names(txdf), function(txname) {
+              start.end.table <- data.frame(query.exons[[txname]]$exons)
+              names(start.end.table)[1:2] <- c("exon_start", "exon_end")
+              start.end.table <- start.end.table[order(start.end.table$exon_start, start.end.table$exon_end),]
+              eranks <- seq(nrow(start.end.table))
+              if (txdf[txname,]$tx_strand == "-")
+                eranks <- rev(eranks)
+              data.frame(start.end.table, 
+                         exon_rank=eranks,
+                         tx_name=txname)
+            })))
+  df.list<-list(transcripts=txdf, splicings=splicings)
+  df.list
+}
+
+makeTranscriptDbFromMyGene <- function(gene.list, scopes, species){
+  if (length(gene.list) == 1) {
+    res<-query(gene.list,
+               scopes=scopes,
+               fields="exons",
+               species=species, 
+               size=1,
+               return.as="records")$hits
+  } else {  
+    res<-queryMany(gene.list,
+                   scopes=scopes,
+                   fields="exons",
+                   species=species,
+                   return.as="records")
+  }
+  merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
+  
+}

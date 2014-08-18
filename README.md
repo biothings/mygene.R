@@ -9,7 +9,7 @@
 ```
 #!r
 source("http://bioconductor.org/biocLite.R")
-biocLite(c("GenomicFeatures, "IRanges", "httr", "jsonlite", "Hmisc", "sqldf", "BiocStyle"))
+biocLite(c("GenomicFeatures", "IRanges", "httr", "jsonlite", "Hmisc", "sqldf", "BiocStyle"))
 ```
 * You can either install from package archive file
 by downloading [***mygene***](https://bitbucket.org/sulab/mygene.r/downloads)

@@ -83,9 +83,29 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
           scopes="reporter", species="human")
 @ 
 
-   
-\section{Tutorial, ID mapping}
+\section{makeTranscriptDbFromMyGene}
 
+\section{Tutorial, ID mapping}
+TranscriptDb is a container for storing transcript annotations. makeTranscriptDbFromMyGene allows the user to make a TranscriptDb object in the Genomic Features package from a mygene "exons" query. 
+
+
+<<>>=
+xli<-c('DDX26B', 
+       'CCDC83', 
+       'MAST3', 
+       'RPL11', 
+       'ZDHHC20', 
+       'LUC7L3', 
+       'SNORD49A', 
+       'CTSH', 
+       'ACOT8')
+makeTranscriptDbFromMyGene(xli, 
+          scopes="symbol", species="human")
+@ 
+
+makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \Rcode{TranscriptDb} object. See \Rcode{?TranscriptDb} for methods to utilize and access transcript annotations.
+
+\section{Tutorial, ID mapping}
 
 ID mapping is a very common, often not fun, task for every bioinformatician. Supposedly you have a list of gene symbols or reporter ids from an upstream analysis, and then your next analysis requires to use gene ids (e.g. Entrez gene ids or Ensembl gene ids). So you want to convert that list of gene symbols or reporter ids to corresponding gene ids.
 

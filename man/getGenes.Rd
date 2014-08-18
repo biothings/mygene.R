@@ -20,7 +20,7 @@ A vector, list, or comm-sep string entrez/ensembl gene ids
 A vector of fields to return. If fields=="all", all available fields are returned.
 }
   \item{species}{
-Optionally, you can pass species names ortaxonomy ids
+Optionally, you can pass species names or taxonomy ids
 }
 \item{return.as}{
 "DataFrame" (Iranges, default), "records" (list), "text" (JSON).

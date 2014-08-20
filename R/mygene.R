@@ -272,7 +272,10 @@ index.tx.id<-function(transcripts, splicings){#, genes){
     transcripts$unique_tx_name<-NULL
     transcripts$cdsstart<-NULL
     transcripts$cdsend<-NULL
-    makeTranscriptDb(transcripts, new.splicings, genes) 
+    chrominfo<-data.frame(chrom=as.character(unique(transcripts$tx_chrom)),
+                          length=rep(NA, length(unique(transcripts$tx_chrom))),
+                          is_circular=rep(NA, length(unique(transcripts$tx_chrom))))
+    makeTranscriptDb(transcripts, new.splicings, genes, chrominfo)
 }
 
 # merges like data.frames to single dataframe
@@ -365,7 +368,7 @@ extract.tables.for.gene <- function(query) {
 }
 
 # passes gene list to query or queryMany, converts response to txdb
-makeTranscriptDbFromMyGene <- function(gene.list, scopes, species){
+makeTranscriptDbFromMyGene <- function(gene.list, scopes, species, returnall=FALSE){
     if (length(gene.list) == 1) {
          res<-query(gene.list,
                scopes=scopes,
@@ -374,21 +377,27 @@ makeTranscriptDbFromMyGene <- function(gene.list, scopes, species){
                size=1,
                return.as="records")$hits
     } else {  
+    mygene<- MyGene(verbose=FALSE)  
     res<-queryMany(gene.list,
                    scopes=scopes,
                    fields="exons",
                    species=species,
-                   return.as="records")
+                   return.as="records",
+                   mygene=mygene)
     }
     has.exons <- sapply(res, function(x) is.null(x$notfound))
     if (all(!has.exons)) {
       stop("No genes from your gene list have available exons annotations")
     } else if (any(!has.exons)) {
       warning("Some genes do not have available exons annotations")
-      missing <- as.character(lapply(res[!has.exons], function(x) x[['query']]))
-      print(missing)
+      notfound <- as.character(lapply(res[!has.exons], function(x) x[['query']]))
     }
     res <- res[has.exons]
-    merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
-  
+    txdb<-merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
+    
+    if (returnall){
+      return(c(txdb, notfound))
+    } else {
+      txdb
+    }
 }

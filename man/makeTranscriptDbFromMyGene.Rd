@@ -23,12 +23,15 @@ of fields.
 }
   \item{species}{
 Names or taxonomy ids
+}
+  \item{returnall}{
+Logical, if TRUE, return list of genes without exons annotations. False by Default.
 }}
 \details{
 makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{\link{TranscriptDb}} object. See \code{\link{?TranscriptDb}} for utilizing transcript annotations.
 }
 \examples{
-## xli<-c('DDX26B', 
+## xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3',  
        'RPL11', 
@@ -37,8 +40,6 @@ makeTranscriptDbFromMyGene invokes either the query or queryMany method and pass
        'SNORD49A', 
        'CTSH', 
        'ACOT8')
-## makeTranscriptDbFromMyGene(xli, scopes="symbol", species="human")
-}
+## txdb <- makeTranscriptDbFromMyGene(xli, scopes="symbol", species="human")
 
-\keyword{ ~kwd1 }
-\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
+}

@@ -24,7 +24,7 @@ validMyGeneObject <- function(object) {
 
 setValidity("MyGene", validMyGeneObject)
 
-.return.as<-function(gene_obj, return.as = c("DataFrame", "records", "text")) {
+.return.as<-function(gene_obj, return.as=c("DataFrame", "records", "text")) {
     return.as <- match.arg(return.as)
     ## Get the records, then call jsonlite:::simplify to convert to a
     ## data.frame
@@ -67,7 +67,7 @@ setMethod(".request.post", c(mygene="MyGene"),
             function(mygene, path, params=list()) {
     url <- paste(mygene@base.url, path, sep="")
     headers<-c('Content-Type'= 'application/x-www-form-urlencoded',
-            'User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
+            'User-Agent'=sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
             res <- POST(url, body=params, config=list(add_headers(headers)), verbose())
@@ -116,11 +116,11 @@ setMethod("metadata", c(x="MyGene"), function(x, ...) {
 })
 
 setGeneric("getGene", signature=c("mygene"),
-            function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+            function(geneid, fields=c("symbol","name","taxid","entrezgene"),
             ..., return.as=c("records", "text"), mygene) standardGeneric("getGene"))
 
 setMethod("getGene", c(mygene="MyGene"),
-            function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+            function(geneid, fields=c("symbol","name","taxid","entrezgene"),
             ..., return.as=c("records", "text"), mygene) {
     return.as <- match.arg(return.as)
     params <- list(...)
@@ -132,7 +132,7 @@ setMethod("getGene", c(mygene="MyGene"),
 ## If nothing is passed for the mygene argument, just construct a
 ## default MyGene object and use it.
 setMethod("getGene", c(mygene="missing"),
-            function(geneid, fields = c("symbol","name","taxid","entrezgene"),
+            function(geneid, fields=c("symbol","name","taxid","entrezgene"),
             ..., return.as=c("records", "text"), mygene) {
 
     mygene <- MyGene()
@@ -140,12 +140,12 @@ setMethod("getGene", c(mygene="missing"),
 })
 
 setGeneric("getGenes", signature=c("mygene"),
-            function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-            ..., return.as = c("DataFrame", "records", "text"), mygene) standardGeneric("getGenes"))
+            function(geneids, fields=c("symbol","name","taxid","entrezgene"),
+            ..., return.as=c("DataFrame", "records", "text"), mygene) standardGeneric("getGenes"))
 
 setMethod("getGenes", c(mygene="MyGene"),
             function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-            ..., return.as = c("DataFrame", "records", "text"), mygene) {
+            ..., return.as=c("DataFrame", "records", "text"), mygene) {
     return.as <- match.arg(return.as)
     if (exists('fields')) {
         params <- list(...)
@@ -160,7 +160,7 @@ setMethod("getGenes", c(mygene="MyGene"),
 
 setMethod("getGenes", c(mygene="missing"),
             function(geneids, fields = c("symbol","name","taxid","entrezgene"),
-            ..., return.as = c("DataFrame", "records", "text"), mygene) {
+            ..., return.as=c("DataFrame", "records", "text"), mygene) {
     mygene <- MyGene()
     getGenes(geneids, fields, ..., return.as=return.as, mygene=mygene)
 })

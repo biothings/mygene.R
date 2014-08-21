@@ -31,15 +31,7 @@ Logical, if TRUE, return list of genes without exons annotations. False by Defau
 makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{\link{TranscriptDb}} object. See \code{\link{?TranscriptDb}} for utilizing transcript annotations.
 }
 \examples{
-## xli <- c('DDX26B', 
-       'CCDC83', 
-       'MAST3',  
-       'RPL11', 
-       'ZDHHC20', 
-       'LUC7L3', 
-       'SNORD49A', 
-       'CTSH', 
-       'ACOT8')
+## xli <- c('DDX26B','CCDC83','MAST3', 'RPL11')
 ## txdb <- makeTranscriptDbFromMyGene(xli, scopes="symbol", species="human")
 
 }

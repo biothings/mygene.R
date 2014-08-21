@@ -37,7 +37,7 @@ library(Hmisc)
 }
 
 .unnest <- function(list) {
-    while(any(vapply(list, is.list, T))){
+    while(any(vapply(list, is.list, TRUE))){
     list<-lapply(list, unlist, recursive=FALSE)
     return(list)
     }

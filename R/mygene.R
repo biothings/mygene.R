@@ -4,6 +4,7 @@ library(httr)
 library(jsonlite)
 library(sqldf)
 
+
 version <- '0.3'
 MyGene <- setClass("MyGene",
     slots=list(base.url="character", delay="numeric", step="numeric", version="character", verbose="logical", debug="logical"),

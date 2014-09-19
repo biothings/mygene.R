@@ -10,7 +10,9 @@ Return the batch query result.
 This is a wrapper for POST query of "/query" service.
 }
 \usage{
-queryMany(qterms, scopes=NULL, ..., return.as)
+queryMany(qterms, scopes=NULL, fields=c("name", "symbol", "taxid", "entrezgene"), 
+          species=c("human","mouse","rat"), ..., skip=0, entrezonly=FALSE, 
+          return.as=c("DataFrame", "records", "text"), returnall=FALSE)
 }
 
 \arguments{
@@ -29,29 +31,23 @@ of fields.
   \item{species}{
 Optionally, you can pass species names or taxonomy ids
 }
-  \item{size}{
-The maximum number of results to return (with a cap of 1000 at the moment). Default: 10.
-}
   \item{skip}{
 The number of results to skip. Default: 0.
-}
-  \item{sort}{
-Prefix with "-" for descending order, otherwise in ascending order.Default: sort by matching scores in decending order.
 }
   \item{entrezonly}{
 If True, return only matching entrez genes, otherwise, including matching Ensemble-only genes (those have no matching entrez genes).
 }
 \item{returnall}{
-if True, return a list of all related data, including dup. and missing qterms.
-}
-\item{verbose}{
-If True (default), print out infomation about dup and missing qterms.
+if True, return a list of all related data, including dup. and missing qterms. FALSE by default.
 }
 \item{return.as}{
 "DataFrame" (IRanges, default), "records" (list), "text" (JSON).
+}
+\item{...}{
+See http://docs.mygene.info/en/latest/doc/query_service.html for complete argument details and syntax.
 }}
 \references{
-http://mygene.info/doc/query_service.html
+Ref: http://docs.mygene.info/en/latest/doc/query_service.html
 }
 
 \seealso{

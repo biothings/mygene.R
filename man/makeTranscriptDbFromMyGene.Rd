@@ -9,7 +9,7 @@ makeTranscriptDbFromMyGene
 makeTranscriptDbFromMyGene allows the user to make a TranscriptDb object in the Genomic Features package from a mygene "exons" query. 
 }
 \usage{
-makeTranscriptDbFromMyGene(gene.list, scopes, species)
+makeTranscriptDbFromMyGene(gene.list, scopes, species, returnall=FALSE)
 }
 \arguments{
   \item{gene.list}{
@@ -28,7 +28,10 @@ Names or taxonomy ids
 Logical, if TRUE, return list of genes without exons annotations. False by Default.
 }}
 \details{
-makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{\link{TranscriptDb}} object. See \code{\link{?TranscriptDb}} for utilizing transcript annotations.
+makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{\link{TranscriptDb}} object. See ?TranscriptDb for utilizing transcript annotations.
+}
+\seealso{
+\code{\link{TranscriptDb}}
 }
 \examples{
 ## xli <- c('DDX26B','CCDC83','MAST3', 'RPL11')

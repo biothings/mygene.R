@@ -9,7 +9,8 @@ Return the list of gene objects for the given list of geneids.
 This is a wrapper for POST query of "/gene" service.
 }
 \usage{
-getGenes(geneids, fields = c("symbol", "name", "taxid", "entrezgene", ..., return.as)
+getGenes(geneids, fields = c("symbol", "name", "taxid", "entrezgene", ..., 
+          species=c("human", "mouse", "rat"), return.as="DataFrame")
 }
 
 \arguments{
@@ -24,10 +25,13 @@ Optionally, you can pass species names or taxonomy ids
 }
 \item{return.as}{
 "DataFrame" (Iranges, default), "records" (list), "text" (JSON).
+}
+\item{...}{
+See http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
 }}
 
 \references{
-Ref: http://mygene.info/doc/annotation_service.html
+Ref: http://docs.mygene.info/en/latest/doc/annotation_service.html
 }
 
 \seealso{

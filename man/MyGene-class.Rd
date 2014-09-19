@@ -27,7 +27,7 @@ Objects can be created by calls of the form \code{MyGene(...)}.
   \item{\code{getGenes(geneids, fields, ...)}:}{ Return the list of gene object for the given list of geneids. }
   \item{\code{query(q, ...)}:}{ Return  the query result. }
   \item{\code{queryMany(qterms, scopes, ...)}:}{ Return the batch query result. }
-  \item{\code{metaData()}:}{ Get metadata for MyGene.info services. }
+  \item{\code{metadata()}:}{ Get metadata for MyGene.info services. }
     
   }
 }

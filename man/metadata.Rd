@@ -11,7 +11,13 @@ Get metadata for MyGene.info services.
 \usage{
 metadata(x, ...)
 }
-
+\arguments{
+  \item{x}{
+MyGene object
+}
+  \item{...}{
+MyGene object slot parameters
+}}
 \references{
 http://mygene.info/v2/metadata
 }

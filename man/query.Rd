@@ -9,7 +9,9 @@ Return  the query result.
 This is a wrapper for GET query of "/query?q=<query>" service.
 }
 \usage{
-query(q, ..., return.as)
+query(q, fields=c("name", "symbol", "taxid", "entrezgene"), 
+          species=c("human","mouse","rat"), size=10, skip=0, ..., entrezonly=FALSE,
+          return.as=c("DataFrame", "records", "text"))
 }
 \arguments{
   \item{q}{
@@ -29,19 +31,19 @@ moment). Default: 10.
   \item{skip}{
 The number of results to skip. Default: 0.
 }
-  \item{sort}{
-Prefix with "-" for descending order, otherwise in ascending order.
-Default: sort by matching scores in decending order.
-}
   \item{entrezonly}{
 If True, return only matching entrez genes, otherwise, including matching 
 Ensemble-only genes (those have no matching entrez genes).
 }
 \item{return.as}{
 "DataFrame" (IRanges, default), "records" (list), or "text" (JSON).
-}}
+}
+\item{...}{
+See http://docs.mygene.info/en/latest/doc/query_service.html for complete argument details and syntax.
+}
+}
 \references{
-Ref: http://mygene.info/doc/query_service.html
+Ref: http://docs.mygene.info/en/latest/doc/query_service.html
 }
 
 \seealso{

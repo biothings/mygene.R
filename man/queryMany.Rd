@@ -46,6 +46,7 @@ if True, return a list of all related data, including dup. and missing qterms. F
 \item{...}{
 See http://docs.mygene.info/en/latest/doc/query_service.html for complete argument details and syntax.
 }}
+\value{returns a gene object (list, DataFrame, or JSON text) containing the queried annotations}
 \references{
 Ref: http://docs.mygene.info/en/latest/doc/query_service.html
 }

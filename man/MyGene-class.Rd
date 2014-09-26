@@ -23,11 +23,18 @@ Objects can be created by calls of the form \code{MyGene(...)}.
 }
 \section{Methods}{
   \describe{
-  \item{\code{getGene(geneid, fields, ...)}:}{ Return the gene object for the given geneid }
-  \item{\code{getGenes(geneids, fields, ...)}:}{ Return the list of gene object for the given list of geneids. }
-  \item{\code{query(q, ...)}:}{ Return  the query result. }
-  \item{\code{queryMany(qterms, scopes, ...)}:}{ Return the batch query result. }
-  \item{\code{metadata()}:}{ Get metadata for MyGene.info services. }
+  \item{\code{getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene"), 
+        species=c("human", "mouse", "rat"), ..., return.as=c("records", "text"))}:}{ Return the gene object for the given geneid }
+  \item{\code{getGenes(geneids, fields = c("symbol", "name", "taxid", "entrezgene"), ..., 
+          species=c("human", "mouse", "rat"), return.as=c("DataFrame", "records", "text"))}:}{ Return the list of gene object for the given list of geneids. }
+  \item{\code{query(q, fields=c("name", "symbol", "taxid", "entrezgene"), 
+          species=c("human","mouse","rat"), size=10, skip=0, ..., entrezonly=FALSE,
+          return.as=c("DataFrame", "records", "text"))}:}{ Return  the query result. }
+  \item{\code{queryMany(qterms, scopes=NULL, fields=c("name", "symbol", "taxid", "entrezgene"), 
+          species=c("human","mouse","rat"), ..., skip=0, entrezonly=FALSE, 
+          return.as=c("DataFrame", "records", "text"), returnall=FALSE)}:}{ Return the batch query result. }
+  \item{\code{metadata(x, ...)}:}{ Get metadata for MyGene.info services. }
+  \item{\code{makeTranscriptDbFromMyGene(gene.list, scopes, species, returnall=FALSE)}:}{ Make a TranscriptDb object from transcript annotations }
     
   }
 }
@@ -43,7 +50,7 @@ showClass("MyGene")
 }
 \keyword{classes}
 \usage{
-mygene<-MyGene(base.url="http://mygene.info/v2", delay=1, step=1000,
+MyGene(base.url="http://mygene.info/v2", delay=1, step=1000,
         version=version, verbose=TRUE, debug=FALSE)
 }
 

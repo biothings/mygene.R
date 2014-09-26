@@ -34,7 +34,7 @@ makeTranscriptDbFromMyGene invokes either the query or queryMany method and pass
 \code{\link{TranscriptDb}}
 }
 \examples{
-## xli <- c('DDX26B','CCDC83','MAST3', 'RPL11')
-## txdb <- makeTranscriptDbFromMyGene(xli, scopes="symbol", species="human")
+xli <- c('DDX26B','CCDC83','MAST3', 'RPL11')
+txdb <- makeTranscriptDbFromMyGene(xli, scopes="symbol", species="human")
 
 }

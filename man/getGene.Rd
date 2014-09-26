@@ -10,8 +10,8 @@ Return the gene object for the given geneid.
 This is a wrapper for GET query of "/gene/<geneid>" service.
 }
 \usage{
-getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene", 
-        species=c("human", "mouse", "rat"), ..., return.as="records")
+getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene"), 
+        species=c("human", "mouse", "rat"), ..., return.as=c("records", "text"))
 }
 \arguments{
   \item{geneid}{
@@ -29,6 +29,8 @@ Optionally, you can pass comma-separated species names or taxonomy ids
 \item{...}{
 See http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
 }}
+\value{returns a gene object (list or data.frame) containing the queried annotations}
+
 \references{
 Ref: http://docs.mygene.info/en/latest/doc/annotation_service.html
 }

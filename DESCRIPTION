@@ -15,4 +15,4 @@ Imports: httr (>= 0.3), jsonlite (>= 0.9.7), IRanges (>= 1.22.0),
         Hmisc, sqldf
 Suggests: BiocStyle
 biocViews: Annotation
-Packaged: 2014-09-26 17:47:44 UTC; Amark
+Packaged: 2014-10-07 19:00:08 UTC; Amark

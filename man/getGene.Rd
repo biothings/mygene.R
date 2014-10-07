@@ -1,7 +1,8 @@
 \name{getGene}
 \docType{methods}
 \alias{getGene}
-
+\alias{getGene,MyGene-method}
+\alias{getGene,missing-method}
 
 \title{
 Return the gene object for the given geneid.
@@ -11,7 +12,7 @@ This is a wrapper for GET query of "/gene/<geneid>" service.
 }
 \usage{
 getGene(geneid, fields = c("symbol", "name", "taxid", "entrezgene"), 
-        species=c("human", "mouse", "rat"), ..., return.as=c("records", "text"))
+        ..., return.as=c("records", "text"), mygene)
 }
 \arguments{
   \item{geneid}{
@@ -20,15 +21,18 @@ Entrez/ensembl gene id
   \item{fields}{
 Fields to return, a list of a comma-sep string. If fields=="all", all available fields are returned.
 }
-  \item{species}{
-Optionally, you can pass comma-separated species names or taxonomy ids
+\item{...}{
+Includes \code{species} as well as several other fields. 
+View available fields by calling \code{?metadata}.
+Also, see http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
 }
 \item{return.as}{
 "records"" (list), "text" (JSON).
 }
-\item{...}{
-See http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
-}}
+\item{mygene}{
+If missing, default object will be used.
+}
+}
 \value{returns a gene object (list or data.frame) containing the queried annotations}
 
 \references{

@@ -27,11 +27,12 @@ Names or taxonomy ids
   \item{returnall}{
 Logical, if TRUE, return list of genes without exons annotations. False by Default.
 }}
+\value{returns TranscriptDb object}
 \details{
-makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{\link{TranscriptDb}} object. See ?TranscriptDb for utilizing transcript annotations.
+makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{TranscriptDb} object. See \code{?TranscriptDb} for utilizing transcript annotations.
 }
 \seealso{
-\code{\link{TranscriptDb}}
+\code{\link[GenomicFeatures]{makeTranscriptDb}}
 }
 \examples{
 xli <- c('DDX26B','CCDC83','MAST3', 'RPL11')

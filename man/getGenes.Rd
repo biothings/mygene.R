@@ -1,6 +1,8 @@
 \name{getGenes}
 \docType{methods}
 \alias{getGenes}
+\alias{getGenes,MyGene-method}
+\alias{getGenes,missing-method}
 
 \title{
 Return the list of gene objects for the given list of geneids.
@@ -10,7 +12,7 @@ This is a wrapper for POST query of "/gene" service.
 }
 \usage{
 getGenes(geneids, fields = c("symbol", "name", "taxid", "entrezgene"), ..., 
-          species=c("human", "mouse", "rat"), return.as=c("DataFrame", "records", "text"))
+          return.as=c("DataFrame", "records", "text"), mygene)
 }
 
 \arguments{
@@ -20,15 +22,18 @@ A vector, list, or comm-sep string entrez/ensembl gene ids
   \item{fields}{
 A vector of fields to return. If fields=="all", all available fields are returned.
 }
-  \item{species}{
-Optionally, you can pass species names or taxonomy ids
+\item{...}{
+Includes \code{species} as well as several other fields. 
+View available fields by calling \code{?metadata}.
+Also, see http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
 }
 \item{return.as}{
 "DataFrame" (Iranges, default), "records" (list), "text" (JSON).
 }
-\item{...}{
-See http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
-}}
+\item{mygene}{
+If missing, default object will be used.
+}
+}
 
 \value{returns a gene object (DataFrame, list, or JSON text) containing the queried annotations}
 

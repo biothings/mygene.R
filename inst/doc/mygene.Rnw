@@ -1,4 +1,5 @@
 \documentclass[12pt]{article}
+%\VignetteIndexEntry{Using mygene.R}
 %\\SweaveOpts{concordance=TRUE}
 <<style-Sweave, eval=TRUE, echo=FALSE, results=tex>>=
 BiocStyle::latex()

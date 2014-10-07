@@ -1,6 +1,7 @@
-importFrom("httr", "GET", "POST", "content", "add_headers")
+importFrom("httr", "GET", "POST", "content", "add_headers", "verbose")
 importFrom("jsonlite", "fromJSON")
 import("IRanges")
+importFrom("IRanges", "metadata")
 importFrom("Hmisc", "cut2")
 importFrom("GenomicFeatures", "makeTranscriptDb", "transcripts")
 import("sqldf")

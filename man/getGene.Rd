@@ -30,10 +30,10 @@ Also, see http://docs.mygene.info/en/latest/doc/annotation_service.html for comp
 "records"" (list), "text" (JSON).
 }
 \item{mygene}{
-If missing, default object will be used.
+A MyGene object that describes how to connect to data resources. See \code{\link{MyGene-class}}. If missing, default object will be used that accesses the main MyGene.info portal. Default is recommended.
 }
 }
-\value{returns a gene object (list or data.frame) containing the queried annotations}
+\value{returns a gene object containing the queried annotations}
 
 \references{
 Ref: http://docs.mygene.info/en/latest/doc/annotation_service.html

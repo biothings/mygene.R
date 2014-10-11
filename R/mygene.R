@@ -5,6 +5,7 @@ library(jsonlite)
 library(sqldf)
 
 version <- '0.3'
+
 MyGene <- setClass("MyGene",
     slots=list(base.url="character", delay="numeric", step="numeric", version="character", verbose="logical", debug="logical"),
     prototype=list(base.url="http://mygene.info/v2", delay=1, step=1000, version=version, verbose=TRUE, debug=FALSE))
@@ -24,7 +25,7 @@ validMyGeneObject <- function(object) {
 
 setValidity("MyGene", validMyGeneObject)
 
-.return.as<-function(gene_obj, return.as=c("DataFrame", "records", "text")) {
+.return.as <- function(gene_obj, return.as=c("DataFrame", "records", "text")) {
     return.as <- match.arg(return.as)
     ## Get the records, then call jsonlite:::simplify to convert to a
     ## data.frame
@@ -46,7 +47,7 @@ setGeneric(".request.get", signature=c("mygene"),
 setMethod(".request.get", c(mygene="MyGene"),
             function(mygene, path, params=list()){
     url <- paste(mygene@base.url, path, sep="")
-    headers<-c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
+    headers <- c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
             res <- GET(url, query=params, verbose())
@@ -66,7 +67,7 @@ setGeneric(".request.post", signature=c("mygene"),
 setMethod(".request.post", c(mygene="MyGene"),
             function(mygene, path, params=list()) {
     url <- paste(mygene@base.url, path, sep="")
-    headers<-c('Content-Type'= 'application/x-www-form-urlencoded',
+    headers <- c('Content-Type'= 'application/x-www-form-urlencoded',
             'User-Agent'=sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
@@ -220,8 +221,8 @@ setMethod("queryMany", c(mygene="MyGene"),
         li_query <- as.character(lapply(out.li[found], function(x) x[['query']]))
      
         #check duplication hits
-        count<-as.list(table(li_query))
-        li_dup<-data.frame(count[count > 1])
+        count <- as.list(table(li_query))
+        li_dup <- data.frame(count[count > 1])
 
         if (verbose){
             cat("Finished\n")
@@ -254,9 +255,9 @@ setMethod("queryMany", c(mygene="missing"),
 })
 
 # tx.id is a foreign key. matches tx.id from transcripts.
-index.tx.id<-function(transcripts, splicings){#, genes){
+index.tx.id <- function(transcripts, splicings){#, genes){
     transcripts$tx_id <- as.integer(seq_len(nrow(transcripts)))  
-    new.splicings<-sqldf("SELECT tx_id, 
+    new.splicings <- sqldf("SELECT tx_id, 
                        exon_rank, 
                        exon_start, 
                        exon_end,
@@ -264,24 +265,36 @@ index.tx.id<-function(transcripts, splicings){#, genes){
                        cds_end
                        FROM transcripts 
                        NATURAL JOIN splicings")
-    genes<-sqldf("SELECT tx_id, 
+    genes <- sqldf("SELECT tx_id, 
                gene_id
                FROM transcripts")
-    transcripts$num_exons<-NULL
-    transcripts$gene_id<-NULL
-    transcripts$unique_tx_name<-NULL
-    transcripts$cdsstart<-NULL
-    transcripts$cdsend<-NULL
-    chrominfo<-data.frame(chrom=as.character(unique(transcripts$tx_chrom)),
+    transcripts$num_exons <- NULL
+    transcripts$gene_id <- NULL
+    transcripts$unique_tx_name <- NULL
+    transcripts$cdsstart <- NULL
+    transcripts$cdsend <- NULL
+    chrominfo <- data.frame(chrom=as.character(unique(transcripts$tx_chrom)),
                           length=rep(NA, length(unique(transcripts$tx_chrom))),
                           is_circular=rep(NA, length(unique(transcripts$tx_chrom))))
-    makeTranscriptDb(transcripts, new.splicings, genes, chrominfo)
+    mygene.version <- tryCatch(installed.packages()["mygene",], error=function(...) "unknown")
+    name <- c("mygene version at creation time",
+              "Resource URL",
+              "mygene API URL")#,
+              #"Data source")
+    value <- c(mygene.version,
+               "http://mygene.info",
+               "http://mygene.info/v2")#,
+            #"mygene")
+    makeTranscriptDb(transcripts, new.splicings, genes, chrominfo, 
+                     metadata=data.frame(name,
+                                         value, 
+                                         stringsAsFactors=FALSE))
 }
 
 # merges like data.frames to single dataframe
-merge.df<-function(df.list){
-    transcript.list<-lapply(df.list, `[[`, "transcripts")
-    splicing.list<-lapply(df.list, `[[`, "splicings")
+merge.df <- function(df.list){
+    transcript.list <- lapply(df.list, `[[`, "transcripts")
+    splicing.list <- lapply(df.list, `[[`, "splicings")
     transcripts <- do.call(rbind, transcript.list) 
     splicings <- do.call(rbind, splicing.list)
     index.tx.id(transcripts, splicings)
@@ -321,7 +334,7 @@ extract.tables.for.gene <- function(query) {
                 }
                 df
               })))
-    df.list<-list(transcripts=txdf, splicings=splicings)
+    df.list <- list(transcripts=txdf, splicings=splicings)
     df.list
   } else {
     query.exons.list <- .transpose.nested.list(query$exons)
@@ -359,7 +372,7 @@ extract.tables.for.gene <- function(query) {
                   }
                   df
                 })))
-      df.list<-list(transcripts=txdf, splicings=splicings)
+      df.list <- list(transcripts=txdf, splicings=splicings)
       df.list
     })
     df.list <- lapply(.transpose.nested.list(df.list.nested), do.call, what=rbind)
@@ -368,17 +381,17 @@ extract.tables.for.gene <- function(query) {
 }
 
 # passes gene list to query or queryMany, converts response to txdb
-makeTranscriptDbFromMyGene <- function(gene.list, scopes, species, returnall=FALSE){
+makeTxDbFromMyGene <- function(gene.list, scopes, species, returnall=FALSE){
     if (length(gene.list) == 1) {
-         res<-query(gene.list,
+         res <- query(gene.list,
                scopes=scopes,
                fields="exons",
                species=species, 
                size=1,
                return.as="records")$hits
     } else {  
-    mygene<- MyGene(verbose=FALSE)  
-    res<-queryMany(gene.list,
+    mygene <- MyGene(verbose=FALSE)  
+    res <- queryMany(gene.list,
                    scopes=scopes,
                    fields="exons",
                    species=species,
@@ -393,7 +406,7 @@ makeTranscriptDbFromMyGene <- function(gene.list, scopes, species, returnall=FAL
       notfound <- as.character(lapply(res[!has.exons], function(x) x[['query']]))
     }
     res <- res[has.exons]
-    txdb<-merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
+    txdb <- merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
     
     if (returnall){
       return(c(txdb, notfound))

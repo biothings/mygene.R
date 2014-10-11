@@ -15,7 +15,7 @@ library(mygene)
 ###################################################
 ### code chunk number 3: mygene.Rnw:36-42
 ###################################################
-gene=getGene("1017", fields="all")
+gene <- getGene("1017", fields="all")
 length(gene)
 gene$name
 gene$taxid
@@ -51,7 +51,7 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
 ###################################################
 ### code chunk number 8: mygene.Rnw:90-102
 ###################################################
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'RPL11', 
@@ -60,7 +60,7 @@ xli<-c('DDX26B',
        'SNORD49A', 
        'CTSH', 
        'ACOT8')
-txdb<-makeTranscriptDbFromMyGene(xli, 
+txdb <- makeTxDbFromMyGene(xli, 
           scopes="symbol", species="human")
 transcripts(txdb)
 
@@ -68,7 +68,7 @@ transcripts(txdb)
 ###################################################
 ### code chunk number 9: mygene.Rnw:117-127
 ###################################################
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'FLOT1', 
@@ -89,7 +89,7 @@ queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 ###################################################
 ### code chunk number 11: mygene.Rnw:140-143
 ###################################################
-out<-queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+out <- queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 out
 out$ensembl.gene[[4]]
 
@@ -97,7 +97,7 @@ out$ensembl.gene[[4]]
 ###################################################
 ### code chunk number 12: mygene.Rnw:151-158
 ###################################################
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'FLOT1', 
@@ -109,7 +109,7 @@ queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 ###################################################
 ### code chunk number 13: mygene.Rnw:163-172
 ###################################################
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'FLOT1', 
@@ -123,7 +123,7 @@ xli<-c('DDX26B',
 ###################################################
 ### code chunk number 14: mygene.Rnw:177-181
 ###################################################
-out<-queryMany(xli, scopes=c("symbol", "reporter","accession"), 
+out <- queryMany(xli, scopes=c("symbol", "reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
 out
 out$`uniprot.Swiss-Prot`[[5]]

@@ -28,10 +28,10 @@ View available fields by calling \code{?metadata}.
 Also, see http://docs.mygene.info/en/latest/doc/annotation_service.html for complete argument details and syntax.
 }
 \item{return.as}{
-"DataFrame" (Iranges, default), "records" (list), "text" (JSON).
+"DataFrame" (default), "records" (list), "text" (JSON).
 }
 \item{mygene}{
-If missing, default object will be used.
+A MyGene object that describes how to connect to data resources. See \code{\link{MyGene-class}}. If missing, default object will be used that accesses the main MyGene.info portal. Default is recommended.
 }
 }
 

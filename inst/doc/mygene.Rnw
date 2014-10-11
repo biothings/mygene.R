@@ -34,7 +34,7 @@ library(mygene)
 @
 
 <<>>=
-gene=getGene("1017", fields="all")
+gene <- getGene("1017", fields="all")
 length(gene)
 gene$name
 gene$taxid
@@ -84,11 +84,11 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
           scopes="reporter", species="human")
 @ 
 
-\section{makeTranscriptDbFromMyGene}
-TranscriptDb is a container for storing transcript annotations. makeTranscriptDbFromMyGene allows the user to make a TranscriptDb object in the Genomic Features package from a mygene "exons" query. 
+\section{makeTxDbFromMyGene}
+TxDb is a container for storing transcript annotations. makeTxDbFromMyGene allows the user to make a TxDb object in the Genomic Features package from a mygene "exons" query using a default mygene object. 
 
 <<>>=
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'RPL11', 
@@ -97,12 +97,12 @@ xli<-c('DDX26B',
        'SNORD49A', 
        'CTSH', 
        'ACOT8')
-txdb<-makeTranscriptDbFromMyGene(xli, 
+txdb <- makeTxDbFromMyGene(xli, 
           scopes="symbol", species="human")
 transcripts(txdb)
 @ 
 
-makeTranscriptDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \Rcode{TranscriptDb} object. See \Rcode{?TranscriptDb} for methods to utilize and access transcript annotations.
+makeTxDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \Rcode{TxDb} object. See \Rcode{?TxDb} for methods to utilize and access transcript annotations.
 
 \section{Tutorial, ID mapping}
 
@@ -115,7 +115,7 @@ Here we want to show you how to do ID mapping quickly and easily.
 Suppose xli is a list of gene symbols you want to convert to entrez gene ids:
 
 <<>>=
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'FLOT1', 
@@ -138,7 +138,7 @@ queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 Now if you want Ensembl gene ids back:
 
 <<>>=
-out<-queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
+out <- queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 out
 out$ensembl.gene[[4]]
 @
@@ -149,7 +149,7 @@ out$ensembl.gene[[4]]
 In case that an input id has no matching gene, you will be notified from the output.The returned list for this query term contains \Rcode{notfound} value as True.
 
 <<>>=
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'FLOT1', 
@@ -161,7 +161,7 @@ queryMany(xli, scopes="symbol", fields="entrezgene", species="human")
 \subsection{When input ids are not just symbols}
 
 <<>>=
-xli<-c('DDX26B', 
+xli <- c('DDX26B', 
        'CCDC83', 
        'MAST3', 
        'FLOT1', 
@@ -175,7 +175,7 @@ xli<-c('DDX26B',
 Above id list contains symbols, reporters and accession numbers, and supposedly we want to get back both Entrez gene ids and uniprot ids. Parameters \Rcode{scopes}, \Rcode{fields}, \Rcode{species} are all flexible enough to support multiple values, either a list or a comma-separated string:
 
 <<>>=
-out<-queryMany(xli, scopes=c("symbol", "reporter","accession"), 
+out <- queryMany(xli, scopes=c("symbol", "reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
 out
 out$`uniprot.Swiss-Prot`[[5]]

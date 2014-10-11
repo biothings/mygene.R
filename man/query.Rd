@@ -23,13 +23,13 @@ View available fields by calling \code{?metadata}.
 Also, see http://docs.mygene.info/en/latest/doc/query_service.html for complete argument details and syntax.
 }
   \item{return.as}{
-"DataFrame" (IRanges, default), "records" (list), or "text" (JSON).
+"DataFrame" (default), "records" (list), or "text" (JSON).
 }
   \item{mygene}{
-If missing, default object will be used.
+A MyGene object that describes how to connect to data resources. See \code{\link{MyGene-class}}. If missing, default object will be used that accesses the main MyGene.info portal. Default is recommended.
 }
 }
-\value{returns a gene object (list, data.frame, or JSON text) containing the queried annotations}
+\value{returns a gene object (DataFrame, list, or JSON text) containing the queried annotations}
 \references{
 Ref: http://docs.mygene.info/en/latest/doc/query_service.html
 }

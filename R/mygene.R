@@ -276,7 +276,7 @@ index.tx.id <- function(transcripts, splicings){#, genes){
     chrominfo <- data.frame(chrom=as.character(unique(transcripts$tx_chrom)),
                           length=rep(NA, length(unique(transcripts$tx_chrom))),
                           is_circular=rep(NA, length(unique(transcripts$tx_chrom))))
-    mygene.version <- tryCatch(installed.packages()["mygene",], error=function(...) "unknown")
+    mygene.version <- tryCatch(installed.packages()["mygene", "Version"], error=function(...) "unknown")
     name <- c("mygene version at creation time",
               "Resource URL",
               "mygene API URL")#,

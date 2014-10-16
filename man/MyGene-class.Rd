@@ -33,7 +33,7 @@ Objects can be created by calls of the form \code{MyGene(base.url="http://mygene
   \item{\code{queryMany(qterms, scopes=NULL, fields=c("name", "symbol", "taxid", "entrezgene"), 
           ..., return.as=c("DataFrame", "records", "text"), returnall=FALSE)}:}{ Return the batch query result. }
   \item{\code{metadata(x, ...)}:}{ Get metadata for MyGene.info services. }
-  \item{\code{makeTranscriptDbFromMyGene(gene.list, scopes, species, returnall=FALSE)}:}{ Make a TranscriptDb object from transcript annotations }
+  \item{\code{makeTxDbFromMyGene(gene.list, scopes, species, returnall=FALSE)}:}{ Make a TxDb object from transcript annotations }
     
   }
 }

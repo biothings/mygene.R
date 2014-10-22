@@ -5,11 +5,14 @@
 
 ### To install ***mygene***: ###
 
-* Install from Bioconductor
+* Install from Bioconductor by typing in your R console:
+
 ```
 source("http://bioconductor.org/biocLite.R")
 biocLite("mygene")
 ```
+
+* Or download tarball from [Bioconductor](http://bioconductor.org/packages/release/bioc/html/mygene.html)
 
 ### Contact ###
 

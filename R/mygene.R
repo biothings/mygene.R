@@ -285,7 +285,7 @@ index.tx.id <- function(transcripts, splicings){#, genes){
                "http://mygene.info",
                "http://mygene.info/v2")#,
             #"mygene")
-    makeTranscriptDb(transcripts, new.splicings, genes, chrominfo, 
+    makeTxDb(transcripts, new.splicings, genes, chrominfo, 
                      metadata=data.frame(name,
                                          value, 
                                          stringsAsFactors=FALSE))

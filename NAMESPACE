@@ -1,7 +1,7 @@
 importFrom("httr", "GET", "POST", "content", "add_headers", "verbose")
 importFrom("jsonlite", "fromJSON")
 importFrom("Hmisc", "cut2")
-importFrom("GenomicFeatures", "makeTranscriptDb", "transcripts")
+importFrom("GenomicFeatures", "makeTxDb", "transcripts")
 import("sqldf")
 import("S4Vectors")
 exportClasses("MyGene")

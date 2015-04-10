@@ -22,6 +22,12 @@ library(Hmisc)
     unname(split(x, f))
 }
 
+.json2df <- function(x){
+    li <- lapply(x, fromJSON, flatten=TRUE)
+    df <- plyr::rbind.fill(li)
+    df
+}
+
 .df2DF <- function(df) {
     DF <- DataFrame(df, check.names=FALSE)
     isli <- sapply(df, is.list)

@@ -4,7 +4,7 @@ library(httr)
 library(jsonlite)
 library(sqldf)
 
-version <- '0.3'
+version <- '0.5'
 
 MyGene <- setClass("MyGene",
     slots=list(base.url="character", delay="numeric", step="numeric", version="character", verbose="logical", debug="logical"),
@@ -26,19 +26,16 @@ validMyGeneObject <- function(object) {
 setValidity("MyGene", validMyGeneObject)
 
 .return.as <- function(gene_obj, return.as=c("DataFrame", "records", "text")) {
-    return.as <- match.arg(return.as)
-    ## Get the records, then call jsonlite:::simplify to convert to a
-    ## data.frame
-    if (return.as == "DataFrame") {
-        gene_obj <- .return.as(gene_obj, "records")
-        outdf <-jsonlite:::simplify(gene_obj)
-        ## This expands out any inner columns that may themselves be data frames.
-        outdf <- .unnest.df(outdf)
-        return(.df2DF(outdf))
-    } else if (return.as == "text") {
-        return(gene_obj)
-    } else {
-        return(fromJSON(gene_obj, simplifyDataFrame=FALSE))}
+  return.as <- match.arg(return.as)
+  if (return.as == "DataFrame") {
+    gene_obj <- .json2df(gene_obj)
+    df <- DataFrame(gene_obj)
+    df$`_version` <- NULL
+    return(df)
+  } else if (return.as == "text") {
+    return(.json.batch.collapse(gene_obj))
+  } else {
+    return(fromJSON(.json.batch.collapse(gene_obj), simplifyDataFrame=FALSE))}
 }
 
 setGeneric(".request.get", signature=c("mygene"),
@@ -176,6 +173,7 @@ setMethod("query", c(mygene="MyGene"),
     params <- list(...)
     params[['q']] <- q
     res <- .request.get(mygene, paste("/query/", sep=""), params)
+    
     if (return.as == "DataFrame"){
         return(fromJSON(res))
     } else if (return.as == "text"){
@@ -285,7 +283,7 @@ index.tx.id <- function(transcripts, splicings){#, genes){
                "http://mygene.info",
                "http://mygene.info/v2")#,
             #"mygene")
-    makeTranscriptDb(transcripts, new.splicings, genes, chrominfo, 
+    makeTxDb(transcripts, new.splicings, genes, chrominfo, 
                      metadata=data.frame(name,
                                          value, 
                                          stringsAsFactors=FALSE))

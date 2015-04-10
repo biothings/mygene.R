@@ -61,6 +61,12 @@ library(Hmisc)
     res
 }
 
+.json2df <- function(x){
+    li <- lapply(x, fromJSON, flatten=TRUE)
+    df <- plyr::rbind.fill(li)
+    df
+}
+
 #before writing to TSV/CSV/xlsx
 # .convert2csv<-function(df){
 #     needpc <-sapply(df, is, "CharacterList")

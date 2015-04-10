@@ -25,20 +25,18 @@ validMyGeneObject <- function(object) {
 
 setValidity("MyGene", validMyGeneObject)
 
+
 .return.as <- function(gene_obj, return.as=c("DataFrame", "records", "text")) {
     return.as <- match.arg(return.as)
-    ## Get the records, then call jsonlite:::simplify to convert to a
-    ## data.frame
     if (return.as == "DataFrame") {
-        gene_obj <- .return.as(gene_obj, "records")
-        outdf <-jsonlite:::simplify(gene_obj)
-        ## This expands out any inner columns that may themselves be data frames.
-        outdf <- .unnest.df(outdf)
-        return(.df2DF(outdf))
+        gene_obj <- .json2df(gene_obj)
+        df <- DataFrame(gene_obj)
+        df$`_version` <- NULL
+        return(df)
     } else if (return.as == "text") {
-        return(gene_obj)
+        return(.json.batch.collapse(gene_obj))
     } else {
-        return(fromJSON(gene_obj, simplifyDataFrame=FALSE))}
+        return(fromJSON(.json.batch.collapse(gene_obj), simplifyDataFrame=FALSE))}
 }
 
 setGeneric(".request.get", signature=c("mygene"),
@@ -285,7 +283,7 @@ index.tx.id <- function(transcripts, splicings){#, genes){
                "http://mygene.info",
                "http://mygene.info/v2")#,
             #"mygene")
-    makeTxDb(transcripts, new.splicings, genes, chrominfo, 
+    makeTxDb(transcripts, new.splicings, genes, chrominfo,
                      metadata=data.frame(name,
                                          value, 
                                          stringsAsFactors=FALSE))

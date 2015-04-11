@@ -105,8 +105,9 @@ setMethod(".request.post", c(mygene="MyGene"),
         i <- i+1
     }
     # This gets the text that would have been returned if we could submit all genes in a single query.
-    restext <- .json.batch.collapse(reslist)
-    return(restext)
+    #restext <- .json.batch.collapse(reslist)
+    #return(restext)
+    reslist
 }
 
 setMethod("metadata", c(x="MyGene"), function(x, ...) {

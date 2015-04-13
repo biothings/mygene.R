@@ -30,6 +30,7 @@ setValidity("MyGene", validMyGeneObject)
   if (return.as == "DataFrame") {
     gene_obj <- .json2df(gene_obj)
     df <- DataFrame(gene_obj)
+    df <- rename(df, c("X_id"="_id"))
     df$`_version` <- NULL
     return(df)
   } else if (return.as == "text") {

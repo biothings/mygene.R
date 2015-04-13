@@ -76,7 +76,7 @@ library(Hmisc)
 # }
 
 .json.batch.collapse <- function(x){
-    stopifnot(all(grepl("^\\s*\\[.*\\]\\s*$", x, perl=TRUE)))
+    #stopifnot(all(grepl("^\\s*\\[.*\\]\\s*$", x, perl=TRUE)))
     x <- gsub(pattern="^\\s*\\[|\\]\\s*$", replacement="", x, perl=TRUE)
     x <- paste(x, collapse=",")
     paste("[", x, "]")

@@ -32,7 +32,7 @@ Logical, if TRUE, return list of genes without exons annotations. False by Defau
 makeTxDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \code{TxDb} object. See \code{?TxDb} for utilizing transcript annotations.
 }
 \seealso{
-\code{\link[GenomicFeatures]{makeTranscriptDb}}
+\code{\link[GenomicFeatures]{makeTxDb}}
 }
 \examples{
 xli <- c('DDX26B','CCDC83','MAST3', 'RPL11')

@@ -177,10 +177,10 @@ setMethod("query", c(mygene="MyGene"),
     return.as <- match.arg(return.as)
     params <- list(...)
     params[['q']] <- q
-    if(exists('fields'){
-	params[['fields']] <- .collapse(fields)
-	params <- lapply(params, .collapse)
-	}
+    #if(exists('fields')){
+	#params[['fields']] <- .collapse(fields)
+    params <- lapply(params, .collapse)
+	#}
     res <- .request.get(mygene, paste("/query/", sep=""), params)
     if (return.as == "DataFrame"){
         return(fromJSON(res))

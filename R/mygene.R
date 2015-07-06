@@ -48,12 +48,12 @@ setGeneric(".request.get", signature=c("mygene"),
 setMethod(".request.get", c(mygene="MyGene"),
             function(mygene, path, params=list()){
     url <- paste(mygene@base.url, path, sep="")
-    headers <- c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
+    .headers <- c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
             res <- GET(url, query=params, verbose())
         } else {
-            res <- GET(url, query=params, config=add_headers(headers))
+            res <- GET(url, query=params, config(add_headers(.headers)))
             }
         }
     if (res$status_code != 200) 
@@ -68,14 +68,14 @@ setGeneric(".request.post", signature=c("mygene"),
 setMethod(".request.post", c(mygene="MyGene"),
             function(mygene, path, params=list()) {
     url <- paste(mygene@base.url, path, sep="")
-    headers <- c('Content-Type'= 'application/x-www-form-urlencoded',
+    .headers <- c('Content-Type'= 'application/x-www-form-urlencoded',
             'User-Agent'=sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
-            res <- POST(url, body=params, config=list(add_headers(headers)), verbose())
+            res <- POST(url, body=params, config(add_headers(.headers)), verbose())
         }
         else{
-            res <- POST(url, body=params, config=list(add_headers(headers)))
+            res <- POST(url, body=params, config(add_headers(.headers)))
             }
         }
     if (res$status_code != 200)

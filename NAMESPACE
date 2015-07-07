@@ -1,4 +1,4 @@
-importFrom("httr", "GET", "POST", "content", "add_headers", "verbose")
+importFrom("httr", "GET", "POST", "content", "add_headers", "verbose", "config")
 importFrom("jsonlite", "fromJSON")
 importFrom("Hmisc", "cut2")
 importFrom("GenomicFeatures", "makeTxDb", "transcripts")

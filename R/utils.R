@@ -1,5 +1,6 @@
 ## mygene utility functions
 library(Hmisc)
+library(plyr)
 
 .collapse <- function(...) {
     paste(unlist(list(...)), sep=",", collapse=",")
@@ -63,7 +64,7 @@ library(Hmisc)
 
 .json2df <- function(x){
     li <- lapply(x, fromJSON, flatten=TRUE)
-    df <- plyr::rbind.fill(li)
+    df <- rbind.fill(li)
     df
 }
 

@@ -8,7 +8,7 @@ version <- '0.3'
 
 MyGene <- setClass("MyGene",
     slots=list(base.url="character", delay="numeric", step="numeric", version="character", verbose="logical", debug="logical"),
-    prototype=list(base.url="http://mygene.info/v2", delay=1, step=1000, version=version, verbose=TRUE, debug=FALSE))
+    prototype=list(base.url="http://mygene.info/v3", delay=1, step=1000, version=version, verbose=TRUE, debug=FALSE))
 
 validMyGeneObject <- function(object) {
     errors <- character(0)
@@ -30,6 +30,7 @@ setValidity("MyGene", validMyGeneObject)
     return.as <- match.arg(return.as)
     ## Get the records, then call jsonlite:::simplify to convert to a
     ## data.frame
+    if (!is.null(gene_obj)) {
     if (return.as == "DataFrame") {
         gene_obj <- .return.as(gene_obj, "records")
         outdf <-jsonlite:::simplify(gene_obj)
@@ -40,6 +41,8 @@ setValidity("MyGene", validMyGeneObject)
         return(gene_obj)
     } else {
         return(fromJSON(gene_obj, simplifyDataFrame=FALSE))}
+    }
+    else {gene_obj}
 }
 
 setGeneric(".request.get", signature=c("mygene"),
@@ -56,10 +59,11 @@ setMethod(".request.get", c(mygene="MyGene"),
             res <- GET(url, query=params, config(add_headers(.headers)))
             }
         }
-    if (res$status_code != 200) 
-        stop("Request returned unexpected status code:\n",
-            paste(capture.output(print(res)), collapse="\n"))
-    httr::content(res, "text")
+    if (res$status_code != 200)
+      {NULL}
+    else {
+      httr::content(res, "text")
+    }
 })
 
 setGeneric(".request.post", signature=c("mygene"),
@@ -79,9 +83,10 @@ setMethod(".request.post", c(mygene="MyGene"),
             }
         }
     if (res$status_code != 200)
-        stop("Request returned unexpected status code:\n",
-             paste(capture.output(print(res)), collapse="\n"))
-    httr::content(res, "text")
+      {NULL}
+    else {
+      httr::content(res, "text")
+    }
 })
 
 

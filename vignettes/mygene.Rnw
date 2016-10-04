@@ -84,6 +84,26 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
           scopes="reporter", species="human")
 @ 
 
+\section{makeTxDbFromMyGene}
+TxDb is a container for storing transcript annotations. makeTxDbFromMyGene allows the user to make a TxDb object in the Genomic Features package from a mygene "exons" query using a default mygene object. 
+
+<<>>=
+xli <- c('DDX26B', 
+       'CCDC83', 
+       'MAST3', 
+       'RPL11', 
+       'ZDHHC20', 
+       'LUC7L3', 
+       'SNORD49A', 
+       'CTSH', 
+       'ACOT8')
+txdb <- makeTxDbFromMyGene(xli, 
+          scopes="symbol", species="human")
+transcripts(txdb)
+@ 
+
+makeTxDbFromMyGene invokes either the query or queryMany method and passes the response to construct a \Rcode{TxDb} object. See \Rcode{?TxDb} for methods to utilize and access transcript annotations.
+
 \section{Tutorial, ID mapping}
 
 ID mapping is a very common, often not fun, task for every bioinformatician. Supposedly you have a list of gene symbols or reporter ids from an upstream analysis, and then your next analysis requires to use gene ids (e.g. Entrez gene ids or Ensembl gene ids). So you want to convert that list of gene symbols or reporter ids to corresponding gene ids.

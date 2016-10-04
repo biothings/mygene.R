@@ -4,11 +4,12 @@ library(httr)
 library(jsonlite)
 library(sqldf)
 
-version <- '0.3'
+version <- '0.5'
+default_url <- "http://mygene.info/v3"
 
 MyGene <- setClass("MyGene",
     slots=list(base.url="character", delay="numeric", step="numeric", version="character", verbose="logical", debug="logical"),
-    prototype=list(base.url="http://mygene.info/v3", delay=1, step=1000, version=version, verbose=TRUE, debug=FALSE))
+    prototype=list(base.url=default_url, delay=1, step=1000, version=version, verbose=TRUE, debug=FALSE))
 
 validMyGeneObject <- function(object) {
     errors <- character(0)
@@ -25,24 +26,18 @@ validMyGeneObject <- function(object) {
 
 setValidity("MyGene", validMyGeneObject)
 
-
 .return.as <- function(gene_obj, return.as=c("DataFrame", "records", "text")) {
-    return.as <- match.arg(return.as)
-    ## Get the records, then call jsonlite:::simplify to convert to a
-    ## data.frame
-    if (!is.null(gene_obj)) {
-    if (return.as == "DataFrame") {
-        gene_obj <- .return.as(gene_obj, "records")
-        outdf <-jsonlite:::simplify(gene_obj)
-        ## This expands out any inner columns that may themselves be data frames.
-        outdf <- .unnest.df(outdf)
-        return(.df2DF(outdf))
-    } else if (return.as == "text") {
-        return(gene_obj)
-    } else {
-        return(fromJSON(gene_obj, simplifyDataFrame=FALSE))}
-    }
-    else {gene_obj}
+  return.as <- match.arg(return.as)
+  if (return.as == "DataFrame") {
+    gene_obj <- .json2df(gene_obj)
+    df <- DataFrame(gene_obj)
+    df <- rename(df, c("X_id"="_id"))
+    df$`_version` <- NULL
+    return(df)
+  } else if (return.as == "text") {
+    return(.json.batch.collapse(gene_obj))
+  } else {
+    return(fromJSON(.json.batch.collapse(gene_obj), simplifyDataFrame=FALSE))}
 }
 
 setGeneric(".request.get", signature=c("mygene"),
@@ -51,19 +46,18 @@ setGeneric(".request.get", signature=c("mygene"),
 setMethod(".request.get", c(mygene="MyGene"),
             function(mygene, path, params=list()){
     url <- paste(mygene@base.url, path, sep="")
-    .headers <- c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
+    headers <- c('User-Agent' = sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
             res <- GET(url, query=params, verbose())
         } else {
-            res <- GET(url, query=params, config(add_headers(.headers)))
+            res <- GET(url, query=params, config=add_headers(headers))
             }
         }
-    if (res$status_code != 200)
-      {NULL}
-    else {
-      httr::content(res, "text")
-    }
+    if (res$status_code != 200) 
+        stop("Request returned unexpected status code:\n",
+            paste(capture.output(print(res)), collapse="\n"))
+    httr::content(res, "text")
 })
 
 setGeneric(".request.post", signature=c("mygene"),
@@ -72,21 +66,20 @@ setGeneric(".request.post", signature=c("mygene"),
 setMethod(".request.post", c(mygene="MyGene"),
             function(mygene, path, params=list()) {
     url <- paste(mygene@base.url, path, sep="")
-    .headers <- c('Content-Type'= 'application/x-www-form-urlencoded',
+    headers <- c('Content-Type'= 'application/x-www-form-urlencoded',
             'User-Agent'=sprintf('R-httr_mygene.R/httr.%s', version))
     if (exists('params')){
         if (mygene@debug){
-            res <- POST(url, body=params, config(add_headers(.headers)), verbose())
+            res <- POST(url, body=params, config=list(add_headers(headers)), verbose())
         }
         else{
-            res <- POST(url, body=params, config(add_headers(.headers)))
+            res <- POST(url, body=params, config=list(add_headers(headers)))
             }
         }
     if (res$status_code != 200)
-      {NULL}
-    else {
-      httr::content(res, "text")
-    }
+        stop("Request returned unexpected status code:\n",
+             paste(capture.output(print(res)), collapse="\n"))
+    httr::content(res, "text")
 })
 
 
@@ -114,9 +107,9 @@ setMethod(".request.post", c(mygene="MyGene"),
         i <- i+1
     }
     # This gets the text that would have been returned if we could submit all genes in a single query.
-    restext <- .json.batch.collapse(reslist)
-    return(restext)
-    #reslist
+    #restext <- .json.batch.collapse(reslist)
+    #return(restext)
+    reslist
 }
 
 setMethod("metadata", c(x="MyGene"), function(x, ...) {
@@ -158,7 +151,7 @@ setMethod("getGenes", c(mygene="MyGene"),
     if (exists('fields')) {
         params <- list(...)
         params[['fields']] <- .collapse(fields)
-	params <- lapply(params, .collapse)
+        params <- lapply(params, .collapse)
     }
     vecparams <- list(ids=.uncollapse(geneids))
     res <- .repeated.query(mygene, '/gene/', vecparams=vecparams, params=params)
@@ -182,11 +175,8 @@ setMethod("query", c(mygene="MyGene"),
     return.as <- match.arg(return.as)
     params <- list(...)
     params[['q']] <- q
-    #if(exists('fields')){
-	#params[['fields']] <- .collapse(fields)
-    params <- lapply(params, .collapse)
-	#}
     res <- .request.get(mygene, paste("/query/", sep=""), params)
+    
     if (return.as == "DataFrame"){
         return(fromJSON(res))
     } else if (return.as == "text"){
@@ -294,9 +284,9 @@ index.tx.id <- function(transcripts, splicings){#, genes){
               #"Data source")
     value <- c(mygene.version,
                "http://mygene.info",
-               "http://mygene.info/v2")#,
+               "http://mygene.info/v3")#,
             #"mygene")
-    makeTxDb(transcripts, new.splicings, genes, chrominfo,
+    makeTxDb(transcripts, new.splicings, genes, chrominfo, 
                      metadata=data.frame(name,
                                          value, 
                                          stringsAsFactors=FALSE))
@@ -312,21 +302,183 @@ merge.df <- function(df.list){
 }
 
 #initiates data.frames from "records" query
-#extract.tables.for.gene <- function(query) {
+extract.tables.for.gene <- function(query) {
+  if (!is.null(names(query$exons[[1]]))){
+    query.exons <- query$exons
+    txs <- sapply(query.exons, `[[`, "transcript")
+    txdf <- data.frame(tx_name=txs, unique_tx_name=txs,
+                     num_exons=sapply(query.exons, function(x) nrow(x$position)),
+                     sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
+                            function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
+                     gene_id=query$`_id`)
+    txdf$strand <- factor(ifelse(txdf$strand == 1, "+", "-"), levels=c("+", "-", "*"))
+    txdf <- rename(txdf, c(txstart="tx_start", txend="tx_end",
+                         chr="tx_chrom", strand="tx_strand"))
+    splicings <- data.frame(
+      do.call(rbind,
+              lapply(seq(1, length(txs), 1), function(txpos) {
+                start.end.table <- data.frame(query.exons[[txpos]]$position)
+                names(start.end.table)[1:2] <- c("exon_start", "exon_end")
+                start.end.table <- start.end.table[order(start.end.table$exon_start, start.end.table$exon_end),]
+                eranks <- seq(nrow(start.end.table))
+                if (txdf[txpos,]$tx_strand == "-")
+                  eranks <- rev(eranks)
+                df <- data.frame(start.end.table, 
+                                 exon_rank=eranks,
+                                 unique_tx_name=query.exons[[txpos]]$transcript)
+                cds.start <- query.exons[[txpos]]$cdsstart
+                cds.end <- query.exons[[txpos]]$cdsend
+                if (!is.null(cds.start) && !is.null(cds.end)) {
+                  coding <- df$exon_end >= cds.start & df$exon_start <= cds.end
+                  df <- data.frame(df, cds_start=NA_integer_, cds_end=NA_integer_)
+                  df$cds_start[coding] <- pmax(cds.start, df$exon_start[coding])
+                  df$cds_end[coding] <- pmin(cds.end, df$exon_end[coding])
+                }
+                df
+              })))
+    df.list <- list(transcripts=txdf, splicings=splicings)
+    df.list
+  } else {
+    query.exons.list <- .transpose.nested.list(query$exons)
+    df.list.nested <- mapply(query.exons.list, seq_len(length(query.exons.list)), 
+                             SIMPLIFY=FALSE,
+                             FUN=function(query.exons, dup.num) {
+      txdf <- data.frame(tx_name=names(query.exons), 
+                         unique_tx_name=sprintf("%s.%s", names(query.exons), dup.num),
+                         num_exons=sapply(query.exons, function(x) nrow(x$exons)),
+                         sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
+                                function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
+                         gene_id=query$`_id`)
+      txdf$strand <- factor(ifelse(txdf$strand == 1, "+", "-"), levels=c("+", "-", "*"))
+      txdf <- rename(txdf, c(txstart="tx_start", txend="tx_end",
+                             chr="tx_chrom", strand="tx_strand"))      
+      splicings <- data.frame(
+        do.call(rbind,
+                lapply(txdf$tx_name, function(txname) {
+                  start.end.table <- data.frame(query.exons[[txname]]$exons)
+                  names(start.end.table)[1:2] <- c("exon_start", "exon_end")
+                  start.end.table <- start.end.table[order(start.end.table$exon_start, start.end.table$exon_end),]
+                  eranks <- seq(nrow(start.end.table))
+                  if (txdf[txname,]$tx_strand == "-")
+                    eranks <- rev(eranks)
+                  df <- data.frame(start.end.table, 
+                              exon_rank=eranks,
+                              unique_tx_name=sprintf("%s.%s", txname, dup.num))
+                  cds.start <- query.exons[[txname]]$cdsstart
+                  cds.end <- query.exons[[txname]]$cdsend
+                  if (!is.null(cds.start) && !is.null(cds.end)) {
+                    coding <- df$exon_end >= cds.start & df$exon_start <= cds.end
+                    df <- data.frame(df, cds_start=NA_integer_, cds_end=NA_integer_)
+                    df$cds_start[coding] <- pmax(cds.start, df$exon_start[coding])
+                    df$cds_end[coding] <- pmin(cds.end, df$exon_end[coding])
+                  }
+                  df
+                })))
+      df.list <- list(transcripts=txdf, splicings=splicings)
+      df.list
+    })
+    df.list <- lapply(.transpose.nested.list(df.list.nested), do.call, what=rbind)
+  }
+  df.list
+}
+
+# passes gene list to query or queryMany, converts response to txdb
+makeTxDbFromMyGene <- function(gene.list, scopes, species, returnall=FALSE){
+    if (length(gene.list) == 1) {
+         res <- query(gene.list,
+               scopes=scopes,
+               fields="exons",
+               species=species, 
+               size=1,
+               return.as="records")$hits
+    } else {  
+    mygene <- MyGene(verbose=FALSE)  
+    res <- queryMany(gene.list,
+                   scopes=scopes,
+                   fields="exons",
+                   species=species,
+                   return.as="records",
+                   mygene=mygene)
+    }
+    has.exons <- sapply(res, function(x) is.null(x$notfound))
+    if (all(!has.exons)) {
+      stop("No genes from your gene list have available exons annotations")
+    } else if (any(!has.exons)) {
+      warning("Some genes do not have available exons annotations")
+      notfound <- as.character(lapply(res[!has.exons], function(x) x[['query']]))
+    }
+    res <- res[has.exons]
+    txdb <- merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
+    if (returnall){
+      return(c(txdb, notfound))
+    } else {
+      txdb
+    }
+}
+
+# tx.id is a foreign key. matches tx.id from transcripts.
+#index.tx.id2 <- function(transcripts, splicings){#, genes){
+#  transcripts$tx_id <- as.integer(seq_len(nrow(transcripts)))  
+#  new.splicings <- sqldf("SELECT tx_id, 
+#                         exon_rank, 
+#                         exon_start, 
+#                         exon_end,
+#                         cds_start,
+#                         cds_end
+#                         FROM transcripts 
+#                         NATURAL JOIN splicings")
+#  genes <- sqldf("SELECT tx_id, 
+#                 gene_id
+#                 FROM transcripts")
+#  transcripts$num_exons <- NULL
+#  transcripts$gene_id <- NULL
+#  transcripts$unique_tx_name <- NULL
+#  transcripts$cdsstart <- NULL
+#  transcripts$cdsend <- NULL
+#  chrominfo <- data.frame(chrom=as.character(unique(transcripts$tx_chrom)),
+#                          length=rep(NA, length(unique(transcripts$tx_chrom))),
+#                          is_circular=rep(NA, length(unique(transcripts$tx_chrom))))
+#  mygene.version <- tryCatch(installed.packages()["mygene", "Version"], error=function(...) "unknown")
+#  name <- c("mygene version at creation time",
+#            "Resource URL",
+#            "mygene API URL")#,
+#  #"Data source")
+#  value <- c(mygene.version,
+#             "http://mygene.info",
+#             "http://mygene.info/v2")#,
+#  #"mygene")
+#  makeTxDb(transcripts, new.splicings, genes, chrominfo, 
+#           metadata=data.frame(name,
+#                               value, 
+#                               stringsAsFactors=FALSE))
+#}
+#
+## merges like data.frames to single dataframe
+#merge.df2 <- function(df.list){
+#  transcript.list <- lapply(df.list, `[[`, "transcripts")
+#  splicing.list <- lapply(df.list, `[[`, "splicings")
+#  transcripts <- do.call(rbind, transcript.list) 
+#  splicings <- do.call(rbind, splicing.list)
+#  return(splicings)
+#  #index.tx.id2(transcripts, splicings)
+#}
+#
+##initiates data.frames from "records" query
+#extract.tables.for.gene2 <- function(query) {
 #  if (!is.null(names(query$exons[[1]]))){
 #    query.exons <- query$exons
 #    txdf <- data.frame(tx_name=names(query.exons), unique_tx_name=names(query.exons),
-#                     num_exons=sapply(query.exons, function(x) nrow(x$exons)),
-#                     sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
-#                            function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
-#                     gene_id=query$`_id`)
+#                       num_exons=sapply(query.exons, function(x) nrow(x$exons)),
+#                       sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
+#                              function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
+#                       gene_id=query$`_id`)
 #    txdf$strand <- factor(ifelse(txdf$strand == 1, "+", "-"), levels=c("+", "-", "*"))
 #    txdf <- rename(txdf, c(txstart="tx_start", txend="tx_end",
-#                         chr="tx_chrom", strand="tx_strand"))
+#                           chr="tx_chrom", strand="tx_strand"))
 #    splicings <- data.frame(
 #      do.call(rbind,
 #              lapply(txdf$tx_name, function(txname) {
-#                start.end.table <- data.frame(query.exons[[txname]]$exons)
+#                start.end.table <- data.frame(sapply(query.exons[[txname]]$exons))
 #                names(start.end.table)[1:2] <- c("exon_start", "exon_end")
 #                start.end.table <- start.end.table[order(start.end.table$exon_start, start.end.table$exon_end),]
 #                eranks <- seq(nrow(start.end.table))
@@ -352,76 +504,76 @@ merge.df <- function(df.list){
 #    df.list.nested <- mapply(query.exons.list, seq_len(length(query.exons.list)), 
 #                             SIMPLIFY=FALSE,
 #                             FUN=function(query.exons, dup.num) {
-#      txdf <- data.frame(tx_name=names(query.exons), 
-#                         unique_tx_name=sprintf("%s.%s", names(query.exons), dup.num),
-#                         num_exons=sapply(query.exons, function(x) nrow(x$exons)),
-#                         sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
-#                                function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
-#                         gene_id=query$`_id`)
-#      txdf$strand <- factor(ifelse(txdf$strand == 1, "+", "-"), levels=c("+", "-", "*"))
-#      txdf <- rename(txdf, c(txstart="tx_start", txend="tx_end",
-#                             chr="tx_chrom", strand="tx_strand"))      
-#      splicings <- data.frame(
-#        do.call(rbind,
-#                lapply(txdf$tx_name, function(txname) {
-#                  start.end.table <- data.frame(query.exons[[txname]]$exons)
-#                  names(start.end.table)[1:2] <- c("exon_start", "exon_end")
-#                  start.end.table <- start.end.table[order(start.end.table$exon_start, start.end.table$exon_end),]
-#                  eranks <- seq(nrow(start.end.table))
-#                  if (txdf[txname,]$tx_strand == "-")
-#                    eranks <- rev(eranks)
-#                  df <- data.frame(start.end.table, 
-#                              exon_rank=eranks,
-#                              unique_tx_name=sprintf("%s.%s", txname, dup.num))
-#                  cds.start <- query.exons[[txname]]$cdsstart
-#                  cds.end <- query.exons[[txname]]$cdsend
-#                  if (!is.null(cds.start) && !is.null(cds.end)) {
-#                    coding <- df$exon_end >= cds.start & df$exon_start <= cds.end
-#                    df <- data.frame(df, cds_start=NA_integer_, cds_end=NA_integer_)
-#                    df$cds_start[coding] <- pmax(cds.start, df$exon_start[coding])
-#                    df$cds_end[coding] <- pmin(cds.end, df$exon_end[coding])
-#                  }
-#                  df
-#                })))
-#      df.list <- list(transcripts=txdf, splicings=splicings)
-#      df.list
-#    })
+#                               txdf <- data.frame(tx_name=names(query.exons), 
+#                                                  unique_tx_name=sprintf("%s.%s", names(query.exons), dup.num),
+#                                                  num_exons=sapply(query.exons, function(x) nrow(x$exons)),
+#                                                  sapply(c("chr", "strand", "txstart", "cdsstart", "cdsend", "txend"), 
+#                                                         function(i) sapply(query.exons, `[[`, i), simplify=FALSE),
+#                                                  gene_id=query$`_id`)
+#                               txdf$strand <- factor(ifelse(txdf$strand == 1, "+", "-"), levels=c("+", "-", "*"))
+#                               txdf <- rename(txdf, c(txstart="tx_start", txend="tx_end",
+#                                                      chr="tx_chrom", strand="tx_strand"))      
+#                               splicings <- data.frame(
+#                                 do.call(rbind,
+#                                         lapply(txdf$tx_name, function(txname) {
+#                                           start.end.table <- data.frame(query.exons[[txname]]$exons)
+#                                           names(start.end.table)[1:2] <- c("exon_start", "exon_end")
+#                                           start.end.table <- start.end.table[order(start.end.table$exon_start, start.end.table$exon_end),]
+#                                           eranks <- seq(nrow(start.end.table))
+#                                           if (txdf[txname,]$tx_strand == "-")
+#                                             eranks <- rev(eranks)
+#                                           df <- data.frame(start.end.table, 
+#                                                            exon_rank=eranks,
+#                                                            unique_tx_name=sprintf("%s.%s", txname, dup.num))
+#                                           cds.start <- query.exons[[txname]]$cdsstart
+#                                           cds.end <- query.exons[[txname]]$cdsend
+#                                           if (!is.null(cds.start) && !is.null(cds.end)) {
+#                                             coding <- df$exon_end >= cds.start & df$exon_start <= cds.end
+#                                             df <- data.frame(df, cds_start=NA_integer_, cds_end=NA_integer_)
+#                                             df$cds_start[coding] <- pmax(cds.start, df$exon_start[coding])
+#                                             df$cds_end[coding] <- pmin(cds.end, df$exon_end[coding])
+#                                           }
+#                                           df
+#                                         })))
+#                               df.list <- list(transcripts=txdf, splicings=splicings)
+#                               df.list
+#                             })
 #    df.list <- lapply(.transpose.nested.list(df.list.nested), do.call, what=rbind)
 #  }
 #  df.list
 #}
-
-# passes gene list to query or queryMany, converts response to txdb
-#makeTxDbFromMyGene <- function(gene.list, scopes, species, returnall=FALSE){
-#    if (length(gene.list) == 1) {
-#         res <- query(gene.list,
-#               scopes=scopes,
-#               fields="exons",
-#               species=species, 
-#               size=1,
-#               return.as="records")$hits
-#    } else {  
+#
+## passes gene list to query or queryMany, converts response to txdb
+#makeTxDbFromMyGene2 <- function(gene.list, scopes, species, returnall=FALSE){
+#  if (length(gene.list) == 1) {
+#    res <- query(gene.list,
+#                 scopes=scopes,
+#                 fields="exons",
+#                 species=species, 
+#                 size=1,
+#                 return.as="records")$hits
+#  } else {  
 #    mygene <- MyGene(verbose=FALSE)  
 #    res <- queryMany(gene.list,
-#                   scopes=scopes,
-#                   fields="exons",
-#                   species=species,
-#                   return.as="records",
-#                   mygene=mygene)
-#    }
-#    has.exons <- sapply(res, function(x) is.null(x$notfound))
-#    if (all(!has.exons)) {
-#      stop("No genes from your gene list have available exons annotations")
-#    } else if (any(!has.exons)) {
-#      warning("Some genes do not have available exons annotations")
-#      notfound <- as.character(lapply(res[!has.exons], function(x) x[['query']]))
-#    }
-#    res <- res[has.exons]
-#    txdb <- merge.df(lapply(res, function(i) extract.tables.for.gene(i)))
-#    
-#    if (returnall){
-#      return(c(txdb, notfound))
-#    } else {
-#      txdb
-#    }
+#                     scopes=scopes,
+#                     fields="exons",
+#                     species=species,
+#                     return.as="records",
+#                     mygene=mygene)
+#  }
+#  has.exons <- sapply(res, function(x) is.null(x$notfound))
+#  if (all(!has.exons)) {
+#    stop("No genes from your gene list have available exons annotations")
+#  } else if (any(!has.exons)) {
+#    warning("Some genes do not have available exons annotations")
+#    notfound <- as.character(lapply(res[!has.exons], function(x) x[['query']]))
+#  }
+#  res <- res[has.exons]
+#  #txdb <- merge.df2(lapply(res, function(i) extract.tables.for.gene2(i)))
+#  txdb <- lapply(res, function(i) extract.tables.for.gene2(i))
+#  if (returnall){
+#    return(c(txdb, notfound))
+#  } else {
+#    txdb
+#  }
 #}

@@ -36,10 +36,10 @@ library(mygene)
 <<>>=
 gene <- getGene("1017", fields="all")
 length(gene)
-gene$name
-gene$taxid
-gene$uniprot
-gene$refseq
+gene[[1]]$name
+gene[[1]]$taxid
+gene[[1]]$uniprot
+gene[[1]]$refseq
 @ 
 
 \subsection{\Rfunction{getGenes}}
@@ -140,7 +140,7 @@ Now if you want Ensembl gene ids back:
 <<>>=
 out <- queryMany(xli, scopes="symbol", fields="ensembl.gene", species="human")
 out
-out$ensembl.gene[[4]]
+out$ensembl[[4]]$gene
 @
 
 
@@ -178,7 +178,7 @@ Above id list contains symbols, reporters and accession numbers, and supposedly 
 out <- queryMany(xli, scopes=c("symbol", "reporter","accession"), 
              fields=c("entrezgene","uniprot"), species="human")
 out
-out$`uniprot.Swiss-Prot`[[5]]
+out$uniprot.Swiss.Prot[[5]]
 @
 
 

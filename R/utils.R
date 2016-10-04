@@ -1,5 +1,6 @@
 ## mygene utility functions
 library(Hmisc)
+library(plyr)
 
 .collapse <- function(...) {
     paste(unlist(list(...)), sep=",", collapse=",")
@@ -7,8 +8,8 @@ library(Hmisc)
 
 .transpose.nested.list <- function(li) {
     ## Assumes that inner names of each element are the same
-    if (length(li) == 0)
-      return(li)
+    #if (length(li) == 0)
+    #  return(li)
     inner.i <- seq_along(li[[1]])
     res <- lapply(inner.i, function(i) lapply(li, `[[`, i))
     names(res) <- names(li[[1]])
@@ -20,12 +21,6 @@ library(Hmisc)
     num.chunks <- ceiling(n / maxsize)
     f <- cut2(1:n, g=num.chunks)
     unname(split(x, f))
-}
-
-.json2df <- function(x){
-    li <- lapply(x, fromJSON, flatten=TRUE)
-    df <- plyr::rbind.fill(li)
-    df
 }
 
 .df2DF <- function(df) {
@@ -67,6 +62,12 @@ library(Hmisc)
     res <- do.call(cbind, reslist)
     row.names(res) <- row.names(df)
     res
+}
+
+.json2df <- function(x){
+    li <- lapply(x, fromJSON, flatten=TRUE)
+    df <- rbind.fill(li)
+    df
 }
 
 #before writing to TSV/CSV/xlsx

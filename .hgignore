@@ -1,4 +1,0 @@
-syntax: glob
-*.pyc
-.Rhistory
-mygene/build

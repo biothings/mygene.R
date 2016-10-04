@@ -14,14 +14,14 @@ Package: \tab mygene\cr
 Type: \tab Package\cr
 Version: \tab 0.99.0\cr
 Date: \tab 2014-04-18\cr
-License: \tab Artistic-2.0\cr
+License: \tab BSD\cr
 Depends: \tab httr jsonlite Hmisc\cr
 }
 }
 \author{
 Adam Mark, Chunlei Wu
 
-Maintainer: Adam Mark <help@mygene.info>
+Maintainer: Chunlei Wu <help@mygene.info>
  
 }
 \references{

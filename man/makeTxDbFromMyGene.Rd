@@ -18,7 +18,7 @@ A list, vector, or comma-separated string of query terms.
   \item{scopes}{
 Type of types of identifiers, either a list, vector, or a comma-separated fields to specify type of
 input qterms, e.g. c("reporter", "ensembl.gene", "symbol")
-refer to "http://mygene.info/doc/query_service.html#available_fields" for full list
+refer to "http://docs.mygene.info/en/latest/doc/data.html#available-fields" for full list
 of fields.
 }
   \item{species}{

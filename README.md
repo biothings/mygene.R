@@ -48,5 +48,5 @@ biocLite("mygene")
     Fix any merge conflicts and push the changes to upstream
     
     ```
-    git push merge upstream/master
+    git push merge upstream master
     ```

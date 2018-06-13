@@ -88,8 +88,8 @@ queryMany(c('1053_at', '117_at', '121_at', '1255_g_at', '1294_at'),
 TxDb is a container for storing transcript annotations. makeTxDbFromMyGene allows the user to make a TxDb object in the Genomic Features package from a mygene "exons" query using a default mygene object. 
 
 <<>>=
-xli <- c('CCDC83', 
-       'MAST3', 
+xli <- c('CCDC83',
+       'MAST3',
        'RPL11', 
        'ZDHHC20', 
        'LUC7L3', 

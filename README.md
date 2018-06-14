@@ -50,3 +50,9 @@ biocLite("mygene")
     ```
     git push merge upstream master
     ```
+
+   Also follow this instruction for bugfix in a release branch:
+   http://bioconductor.org/developers/how-to/git/bug-fix-in-release-and-devel/.
+
+   and this for bumping version after a bugfix:
+   http://bioconductor.org/developers/how-to/version-numbering/.
